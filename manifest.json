@@ -1,0 +1,16 @@
+{
+  "name": "EnglishHub C1",
+  "short_name": "EnglishHub",
+  "description": "Practice English from Language Hub B2+/C1 with spaced repetition",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#131f24",
+  "theme_color": "#58CC02",
+  "orientation": "portrait",
+  "lang": "en",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

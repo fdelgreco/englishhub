@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EnglishHub">
+  <meta name="theme-color" content="#58CC02">
+  <link rel="manifest" href="/manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+  <title>EnglishHub C1</title>
+  <style>
+    :root {
+      --green: #58CC02; --green-dark: #46A302;
+      --blue: #1CB0F6;  --red: #FF4B4B;
+      --yellow: #FFC800; --purple: #CE82FF;
+      --orange: #FF9500;
+      --bg: #131f24; --card: #1f2f38;
+      --text: #ffffff; --muted: #8fa3b0;
+      --border: #2d4a5a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      max-width: 480px; margin: 0 auto; min-height: 100vh;
+    }
+    #app { padding-bottom: 72px; min-height: 100vh; }
+    ::-webkit-scrollbar { width: 0; }
+
+    /* ── BOTTOM NAV ── */
+    .bnav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+      background: var(--card); border-top: 1px solid var(--border);
+      display: flex; z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bnav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 10px 0 12px; cursor: pointer; color: var(--muted);
+      font-size: 11px; gap: 3px; border: none; background: none;
+      transition: color .2s;
+    }
+    .bnav-btn.active { color: var(--green); }
+    .bnav-icon { font-size: 22px; }
+
+    /* ── VIEWS ── */
+    .view { display: none; padding: 20px 16px; animation: fadeIn .2s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .view-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; }
+
+    /* ── HOME ── */
+    .home-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--card); padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 16px; border: 1px solid var(--border);
+    }
+    .install-banner {
+      background: var(--card); border: 1px solid var(--green);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; display: none;
+    }
+    .install-banner.show { display: block; }
+    .install-title { font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
+    .install-text { font-size: 13px; color: var(--muted); }
+    .goal-card {
+      background: var(--card); border-radius: 16px; padding: 18px;
+      margin-bottom: 16px; border: 1px solid var(--border);
+    }
+    .goal-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .goal-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .goal-num { font-size: 28px; font-weight: 800; }
+    .goal-sub { font-size: 13px; color: var(--muted); }
+    .progress-bar { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 5px; transition: width .5s ease; }
+    .goal-status { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      width: 100%; padding: 16px; background: var(--green); color: white;
+      border: none; border-radius: 14px; font-size: 17px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 0 var(--green-dark);
+      transition: transform .1s, box-shadow .1s; margin-bottom: 10px;
+    }
+    .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--green-dark); }
+    .btn-primary:disabled { opacity: .5; cursor: default; }
+    .btn-outline {
+      width: 100%; padding: 14px; background: transparent;
+      color: var(--blue); border: 2px solid var(--blue);
+      border-radius: 14px; font-size: 16px; font-weight: 600;
+      cursor: pointer; margin-bottom: 10px;
+    }
+    .btn-outline:active { background: rgba(28,176,246,.1); }
+
+    /* ── SECTION HEADER ── */
+    .section-head {
+      font-size: 12px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .6px; margin: 18px 0 10px;
+    }
+
+    /* ── UNIT MINI CARD ── */
+    .unit-mini {
+      background: var(--card); border-radius: 12px; padding: 13px 14px;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .unit-mini:active { opacity: .8; }
+    .unit-emoji { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .unit-mini-info { flex: 1; min-width: 0; }
+    .unit-mini-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .unit-mini-bar { height: 5px; background: var(--border); border-radius: 3px; margin-top: 5px; overflow: hidden; }
+    .unit-mini-fill { height: 100%; border-radius: 3px; }
+    .unit-pct { font-size: 14px; font-weight: 700; flex-shrink: 0; }
+
+    /* ── QUIZ VIEW ── */
+    #view-quiz { padding: 16px; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-bar { flex: 1; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+    .quiz-bar-fill { height: 100%; background: var(--green); border-radius: 5px; transition: width .3s ease; }
+    .quiz-close-btn { background: none; border: none; color: var(--muted); font-size: 26px; cursor: pointer; padding: 4px 4px 4px 0; line-height: 1; }
+    .quiz-counter { font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .quiz-unit-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .quiz-type-badge {
+      display: inline-block; font-size: 11px; font-weight: 700; color: var(--blue);
+      background: rgba(28,176,246,.12); padding: 3px 10px; border-radius: 20px; margin-bottom: 14px;
+    }
+    .quiz-q { font-size: 20px; font-weight: 700; line-height: 1.4; margin-bottom: 26px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt-btn {
+      width: 100%; padding: 15px 16px; background: var(--card);
+      border: 2px solid var(--border); border-radius: 14px;
+      color: var(--text); font-size: 15px; text-align: left;
+      cursor: pointer; transition: all .15s; line-height: 1.4;
+    }
+    .opt-btn:active { transform: scale(.98); }
+    .opt-btn.correct { border-color: var(--green); background: rgba(88,204,2,.15); color: var(--green); }
+    .opt-btn.wrong { border-color: var(--red); background: rgba(255,75,75,.15); color: var(--red); }
+    .fill-input {
+      width: 100%; padding: 16px; background: var(--card);
+      border: 2px solid var(--border); border-radius: 14px;
+      color: var(--text); font-size: 18px; outline: none;
+      margin-bottom: 14px; transition: border-color .2s;
+    }
+    .fill-input:focus { border-color: var(--blue); }
+    .fill-input.correct { border-color: var(--green); background: rgba(88,204,2,.1); }
+    .fill-input.wrong { border-color: var(--red); background: rgba(255,75,75,.1); }
+
+    /* ── FEEDBACK BAR ── */
+    .feedback-bar {
+      position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; padding: 12px 16px;
+      display: none; flex-direction: column; gap: 10px;
+      background: var(--bg);
+    }
+    .feedback-bar.show { display: flex; animation: slideUp .3s ease; }
+    @keyframes slideUp { from { transform: translateX(-50%) translateY(100%); } to { transform: translateX(-50%) translateY(0); } }
+    .feedback-box { border-radius: 14px; padding: 14px 16px; }
+    .feedback-box.correct { background: rgba(88,204,2,.12); border: 2px solid var(--green); }
+    .feedback-box.wrong { background: rgba(255,75,75,.12); border: 2px solid var(--red); }
+    .feedback-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .feedback-title.correct { color: var(--green); }
+    .feedback-title.wrong { color: var(--red); }
+    .feedback-exp { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .btn-continue {
+      width: 100%; padding: 15px; border: none; border-radius: 14px;
+      font-size: 16px; font-weight: 700; cursor: pointer; color: white;
+    }
+    .btn-continue.correct { background: var(--green); box-shadow: 0 4px 0 var(--green-dark); }
+    .btn-continue.wrong { background: var(--red); box-shadow: 0 4px 0 #b83535; }
+    .btn-continue:active { transform: translateY(2px); box-shadow: none; }
+
+    /* ── UNITS VIEW ── */
+    .unit-card {
+      background: var(--card); border-radius: 16px; padding: 15px;
+      margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer;
+    }
+    .unit-card:active { opacity: .8; }
+    .unit-card-row { display: flex; align-items: center; gap: 13px; }
+    .unit-icon-lg { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+    .unit-card-info { flex: 1; min-width: 0; }
+    .unit-card-name { font-size: 15px; font-weight: 700; }
+    .unit-card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .unit-card-pct { font-size: 20px; font-weight: 800; flex-shrink: 0; }
+    .unit-card-bar { height: 7px; background: var(--border); border-radius: 4px; margin-top: 11px; overflow: hidden; }
+    .unit-card-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+
+    /* ── PROGRESS VIEW ── */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .stat-card {
+      background: var(--card); border-radius: 16px; padding: 16px;
+      text-align: center; border: 1px solid var(--border);
+    }
+    .stat-val { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+    .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── SETTINGS VIEW ── */
+    .settings-block {
+      background: var(--card); border-radius: 16px; overflow: hidden;
+      margin-bottom: 14px; border: 1px solid var(--border);
+    }
+    .settings-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 15px 16px; border-bottom: 1px solid var(--border);
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-col { display: flex; flex-direction: column; padding: 15px 16px; border-bottom: 1px solid var(--border); gap: 10px; }
+    .settings-col:last-child { border-bottom: none; }
+    .settings-lbl { font-size: 15px; }
+    .settings-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .api-input {
+      width: 100%; padding: 12px 14px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-size: 13px; font-family: monospace; outline: none;
+    }
+    .toggle-btn {
+      width: 50px; height: 28px; background: var(--border); border-radius: 14px;
+      position: relative; cursor: pointer; border: none; flex-shrink: 0;
+      transition: background .2s;
+    }
+    .toggle-btn.on { background: var(--green); }
+    .toggle-btn::after {
+      content: ''; position: absolute; width: 22px; height: 22px;
+      background: white; border-radius: 50%; top: 3px; left: 3px;
+      transition: transform .2s;
+    }
+    .toggle-btn.on::after { transform: translateX(22px); }
+
+    /* ── AI MODAL ── */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75);
+      z-index: 200; display: none; align-items: flex-end; justify-content: center;
+    }
+    .modal-bg.show { display: flex; }
+    .modal-sheet {
+      background: var(--card); border-radius: 24px 24px 0 0;
+      padding: 24px 18px calc(24px + env(safe-area-inset-bottom));
+      width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-title { font-size: 19px; font-weight: 700; }
+    .modal-close { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; }
+    .modal-select {
+      width: 100%; padding: 12px 14px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 12px;
+      color: var(--text); font-size: 14px; margin-bottom: 10px; outline: none;
+    }
+    .ai-result {
+      background: var(--bg); border-radius: 12px; padding: 14px;
+      font-size: 14px; line-height: 1.7; margin-top: 12px;
+      white-space: pre-wrap; color: var(--text); display: none;
+    }
+
+    /* ── CELEBRATION ── */
+    .celebration-overlay {
+      position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.75);
+      display: none; align-items: center; justify-content: center;
+    }
+    .celebration-overlay.show { display: flex; animation: fadeIn .3s ease; }
+    .celebration-card {
+      background: var(--card); border-radius: 24px; padding: 40px 28px;
+      text-align: center; max-width: 320px; width: 90%;
+      border: 2px solid var(--green);
+    }
+    .cel-emoji { font-size: 64px; margin-bottom: 14px; }
+    .cel-title { font-size: 28px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
+    .cel-text { font-size: 15px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+
+    /* ── CONFETTI ── */
+    #confetti-canvas {
+      position: fixed; inset: 0; pointer-events: none;
+      z-index: 499; display: none;
+    }
+    #confetti-canvas.show { display: block; }
+
+    /* ── QUIZ SESSION END CARD ── */
+    .session-end { text-align: center; padding: 20px 0; }
+    .session-end-emoji { font-size: 56px; margin-bottom: 14px; }
+    .session-end-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+    .session-end-sub { font-size: 15px; color: var(--muted); margin-bottom: 28px; }
+    .session-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; }
+    .session-stat { text-align: center; }
+    .session-stat-val { font-size: 28px; font-weight: 800; }
+    .session-stat-lbl { font-size: 12px; color: var(--muted); }
+
+    /* ── CALENDAR ── */
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+    .cal-lbl { font-size: 10px; color: var(--muted); text-align: center; font-weight: 600; padding-bottom: 4px; }
+    .cal-day { aspect-ratio: 1; border-radius: 5px; background: var(--border); }
+    .cal-day.practiced { background: rgba(88,204,2,.35); }
+    .cal-day.goal { background: var(--green); }
+    .cal-day.today { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .cal-day.empty { background: transparent; }
+    .cal-legend { display: flex; gap: 14px; margin-top: 10px; font-size: 11px; color: var(--muted); flex-wrap: wrap; }
+    .cal-legend span { display: flex; align-items: center; gap: 5px; }
+    .cal-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+    /* ── ACHIEVEMENTS ── */
+    .ach-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .ach-badge {
+      background: var(--card); border-radius: 14px; padding: 14px 8px;
+      text-align: center; border: 1px solid var(--border);
+    }
+    .ach-badge.unlocked { border-color: var(--green); background: rgba(88,204,2,.07); }
+    .ach-badge.locked { opacity: .4; filter: grayscale(1); }
+    .ach-emoji { font-size: 26px; margin-bottom: 5px; }
+    .ach-name { font-size: 11px; font-weight: 700; line-height: 1.3; }
+    .ach-desc { font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+
+    /* ── IMPORT MODAL ── */
+    .import-step { display:none; }
+    .import-step.active { display:block; }
+    .file-drop {
+      border: 2px dashed var(--border); border-radius: 16px;
+      padding: 36px 20px; text-align: center; cursor: pointer;
+      transition: border-color .2s; margin-bottom: 14px;
+    }
+    .file-drop:active { border-color: var(--green); }
+    .file-drop-icon { font-size: 40px; margin-bottom: 10px; }
+    .file-drop-text { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .file-drop-sub { font-size: 13px; color: var(--muted); }
+    .import-spinner {
+      width: 48px; height: 48px; border: 4px solid var(--border);
+      border-top-color: var(--green); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 24px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .preview-unit-card {
+      background: var(--bg); border-radius: 16px; padding: 18px;
+      margin-bottom: 14px; border: 1px solid var(--green);
+    }
+    .preview-unit-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .preview-unit-emoji { font-size: 32px; }
+    .preview-unit-name { font-size: 18px; font-weight: 800; }
+    .preview-unit-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .preview-q { background: var(--card); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+    .preview-q-type { font-size: 10px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .custom-unit-row {
+      background: var(--card); border-radius: 12px; padding: 13px 14px;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+      border: 1px solid var(--border);
+    }
+    .custom-unit-del { background: none; border: none; color: var(--red); font-size: 20px; cursor: pointer; padding: 4px; margin-left: auto; }
+
+    /* ── ACHIEVEMENT TOAST ── */
+    .ach-toast {
+      position: fixed; top: 16px; left: 50%;
+      transform: translateX(-50%) translateY(-120px);
+      background: var(--card); border: 2px solid var(--yellow);
+      border-radius: 16px; padding: 12px 18px;
+      display: flex; align-items: center; gap: 12px;
+      z-index: 600; transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      max-width: 320px; width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+    }
+    .ach-toast.show { transform: translateX(-50%) translateY(0); }
+    .ach-toast-emoji { font-size: 28px; flex-shrink: 0; }
+    .ach-toast-label { font-size: 10px; color: var(--yellow); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .ach-toast-name { font-size: 15px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══ HOME VIEW ══ -->
+  <div id="view-home" class="view active">
+    <div class="install-banner" id="installBanner">
+      <div class="install-title">📲 Install on iPhone</div>
+      <div class="install-text">Tap <strong>Share</strong> → "Add to Home Screen" for offline access &amp; the best experience.</div>
+    </div>
+
+    <div class="home-header">
+      <div class="badge" style="color:var(--yellow);">🔥 <span id="streakNum">0</span></div>
+      <div class="badge" style="color:var(--purple);">⚡ <span id="xpNum">0</span> XP</div>
+    </div>
+
+    <div class="goal-card">
+      <div class="goal-label">Daily Goal</div>
+      <div class="goal-row">
+        <span class="goal-num" id="goalNum">0</span>
+        <span class="goal-sub">/ 10 questions</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="goalFill" style="width:0%; background:var(--green);"></div>
+      </div>
+      <div class="goal-status" id="goalStatus">Complete 10 questions to reach your daily goal!</div>
+    </div>
+
+    <button class="btn-primary" onclick="startQuiz()">🎯 Practice Now</button>
+    <button class="btn-outline" onclick="openAIModal()">✨ AI Exercise Generator</button>
+
+    <div class="section-head">All Units</div>
+    <div id="homeUnits"></div>
+  </div>
+
+  <!-- ══ QUIZ VIEW ══ -->
+  <div id="view-quiz" class="view">
+    <div class="quiz-header">
+      <button class="quiz-close-btn" onclick="exitQuiz()">✕</button>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill" style="width:0%"></div></div>
+      <span class="quiz-counter" id="quizCounter">1/10</span>
+    </div>
+    <div id="quizContent"></div>
+    <div class="feedback-bar" id="feedbackBar">
+      <div class="feedback-box" id="feedbackBox">
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <div class="feedback-exp" id="feedbackExp"></div>
+      </div>
+      <button class="btn-continue" id="continueBtn" onclick="nextQuestion()">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- ══ UNITS VIEW ══ -->
+  <div id="view-units" class="view">
+    <div class="view-title">Units</div>
+    <div id="unitCards"></div>
+  </div>
+
+  <!-- ══ PROGRESS VIEW ══ -->
+  <div id="view-progress" class="view">
+    <div class="view-title">Progress</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--yellow);" id="pStreak">0</div>
+        <div class="stat-lbl">🔥 Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--purple);" id="pXP">0</div>
+        <div class="stat-lbl">⚡ Total XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--green);" id="pCorrect">0</div>
+        <div class="stat-lbl">✅ Correct</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--blue);" id="pTotal">0</div>
+        <div class="stat-lbl">📝 Answered</div>
+      </div>
+    </div>
+    <div class="section-head">Unit Mastery</div>
+    <div id="progressUnits"></div>
+
+    <div class="section-head">Practice Calendar</div>
+    <div class="goal-card" style="padding:14px 14px 16px;">
+      <div class="cal-grid" id="calLabels" style="margin-bottom:4px;"></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span><span class="cal-dot" style="background:var(--green)"></span>Goal done</span>
+        <span><span class="cal-dot" style="background:rgba(88,204,2,.35)"></span>Practiced</span>
+        <span><span class="cal-dot" style="background:var(--border)"></span>No practice</span>
+        <span><span class="cal-dot" style="outline:2px solid var(--blue);outline-offset:1px;background:var(--border)"></span>Today</span>
+      </div>
+    </div>
+
+    <div class="section-head">Achievements <span id="achCount" style="color:var(--green);font-size:11px;"></span></div>
+    <div class="ach-grid" id="achGrid"></div>
+    <div style="height:20px;"></div>
+  </div>
+
+  <!-- ══ SETTINGS VIEW ══ -->
+  <div id="view-settings" class="view">
+    <div class="view-title">Settings</div>
+
+    <div class="section-head">AI Features</div>
+    <div class="settings-block">
+      <div class="settings-col">
+        <div>
+          <div class="settings-lbl">Anthropic API Key</div>
+          <div class="settings-sub">Required for AI exercise generation</div>
+        </div>
+        <input type="password" class="api-input" id="apiKeyInput" placeholder="sk-ant-api03-..." />
+        <button class="btn-primary" style="margin:0;" onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+
+    <div class="section-head">Notifications</div>
+    <div class="settings-block">
+      <div class="settings-row">
+        <div>
+          <div class="settings-lbl">Daily Reminder</div>
+          <div class="settings-sub">Prompts when you open the app</div>
+        </div>
+        <button class="toggle-btn" id="notifToggle" onclick="toggleNotif()"></button>
+      </div>
+    </div>
+
+    <div class="section-head">Import New Unit</div>
+    <div class="settings-block">
+      <div class="settings-col">
+        <div>
+          <div class="settings-lbl">Import from Word file</div>
+          <div class="settings-sub">Upload your class notes (.docx) and AI will generate a new unit with questions automatically</div>
+        </div>
+        <button class="btn-primary" style="margin:0;" onclick="openImportModal()">📄 Select .docx file</button>
+      </div>
+    </div>
+
+    <div id="customUnitsSection" style="display:none;">
+      <div class="section-head">My Custom Units</div>
+      <div id="customUnitsList"></div>
+    </div>
+
+    <div class="section-head">Data</div>
+    <div class="settings-block">
+      <div class="settings-row" style="cursor:pointer;" onclick="resetAll()">
+        <div class="settings-lbl" style="color:var(--red);">Reset All Progress</div>
+        <span style="color:var(--muted);">›</span>
+      </div>
+    </div>
+
+    <div style="text-align:center; padding:24px 0; color:var(--muted); font-size:12px; line-height:1.8;">
+      EnglishHub C1 · Language Hub B2+/C1<br>
+      Teacher: Julieta Ayub<br>
+      <span id="settingsQCount">156 questions</span>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bnav">
+  <button class="bnav-btn active" id="nav-home" onclick="showView('home')">
+    <span class="bnav-icon">🏠</span><span>Home</span>
+  </button>
+  <button class="bnav-btn" id="nav-units" onclick="showView('units')">
+    <span class="bnav-icon">📚</span><span>Units</span>
+  </button>
+  <button class="bnav-btn" id="nav-progress" onclick="showView('progress')">
+    <span class="bnav-icon">📊</span><span>Progress</span>
+  </button>
+  <button class="bnav-btn" id="nav-settings" onclick="showView('settings')">
+    <span class="bnav-icon">⚙️</span><span>Settings</span>
+  </button>
+</nav>
+
+<!-- ══ AI MODAL ══ -->
+<div class="modal-bg" id="aiModal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">✨ AI Exercise Generator</div>
+      <button class="modal-close" onclick="closeAIModal()">✕</button>
+    </div>
+    <select class="modal-select" id="aiUnitSel">
+      <option value="">Select a unit…</option>
+    </select>
+    <select class="modal-select" id="aiTypeSel">
+      <option value="vocabulary">Vocabulary exercise</option>
+      <option value="grammar">Grammar exercise</option>
+      <option value="fill">Fill-in-the-blank</option>
+      <option value="conversation">Conversation starter</option>
+    </select>
+    <button class="btn-primary" onclick="generateExercise()">Generate</button>
+    <div class="ai-result" id="aiResult"></div>
+  </div>
+</div>
+
+<!-- ══ CELEBRATION ══ -->
+<div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celebration-card">
+    <div class="cel-emoji">🎉</div>
+    <div class="cel-title">Daily Goal!</div>
+    <div class="cel-text">You completed 10 questions today.<br>Amazing work, Franco! Keep it up!</div>
+    <button class="btn-primary" onclick="closeCelebration()">Keep Going! 💪</button>
+  </div>
+</div>
+
+<!-- ══ IMPORT MODAL ══ -->
+<div class="modal-bg" id="importModal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title" id="importModalTitle">📄 Import New Unit</div>
+      <button class="modal-close" onclick="closeImportModal()">✕</button>
+    </div>
+
+    <!-- Step 1: File selection -->
+    <div class="import-step active" id="importStep1">
+      <div class="file-drop" onclick="document.getElementById('wordFileInput').click()">
+        <div class="file-drop-icon">📝</div>
+        <div class="file-drop-text">Tap to select your .docx file</div>
+        <div class="file-drop-sub">Class notes from Julieta · any Word document</div>
+      </div>
+      <input type="file" id="wordFileInput" accept=".docx" style="display:none" onchange="handleWordFile(this)">
+      <div style="font-size:13px; color:var(--muted); line-height:1.6; background:var(--bg); border-radius:12px; padding:14px;">
+        💡 <strong>How it works:</strong> The app reads your notes, sends them to Claude, and generates a complete new unit with MCQ, fill-in-the-blank, and error correction questions — automatically.
+      </div>
+    </div>
+
+    <!-- Step 2: Processing -->
+    <div class="import-step" id="importStep2">
+      <div style="text-align:center; padding:20px 0;">
+        <div class="import-spinner"></div>
+        <div style="font-size:16px; font-weight:700; margin-bottom:8px;" id="importStatusText">Reading file…</div>
+        <div style="font-size:13px; color:var(--muted);">This usually takes 10–20 seconds</div>
+      </div>
+    </div>
+
+    <!-- Step 3: Preview -->
+    <div class="import-step" id="importStep3">
+      <div style="font-size:13px; color:var(--green); font-weight:700; margin-bottom:12px;">✓ Unit generated — review before saving</div>
+      <div class="preview-unit-card" id="previewUnitCard"></div>
+      <div id="previewQuestions"></div>
+      <button class="btn-primary" onclick="confirmImport()">✅ Save Unit to App</button>
+      <button class="btn-outline" onclick="discardImport()">✕ Discard</button>
+    </div>
+
+    <!-- Step 4: Error -->
+    <div class="import-step" id="importStep4">
+      <div style="text-align:center; padding:20px 0;">
+        <div style="font-size:40px; margin-bottom:12px;">❌</div>
+        <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Something went wrong</div>
+        <div style="font-size:13px; color:var(--muted); margin-bottom:20px;" id="importErrorText"></div>
+        <button class="btn-outline" onclick="resetImportModal()">Try Again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACHIEVEMENT TOAST ══ -->
+<div class="ach-toast" id="achToast">
+  <div class="ach-toast-emoji" id="achToastEmoji">🏆</div>
+  <div>
+    <div class="ach-toast-label">Achievement Unlocked!</div>
+    <div class="ach-toast-name" id="achToastName"></div>
+  </div>
+</div>
+
+<!-- ══ CONFETTI ══ -->
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  QUESTION BANK  —  122 questions across 17 units
+// ══════════════════════════════════════════════════════
+const Q = [
+  // ── Unit 1: Introducing Yourself ──
+  {id:1,u:1,t:'mcq',q:'What does "film buff" mean?',
+   o:['Someone who makes films','Someone who deeply loves cinema','Someone who acts in films','Someone who edits films'],
+   a:1,e:'"Film buff" = a passionate cinema lover. "Buff" means enthusiast.'},
+  {id:2,u:1,t:'mcq',q:'Complete: "I have a ___ for languages — I pick them up very quickly."',
+   o:['trick','talent','knack','skill'],
+   a:2,e:'"Knack" = a natural ability or skill. "I have a knack FOR something."'},
+  {id:3,u:1,t:'fill',q:'She\'s a real ___ person — she loves meeting and talking to new people.',
+   a:'people',e:'"People person" = someone who enjoys social interaction.'},
+  {id:4,u:1,t:'mcq',q:'"Tech savvy" describes someone who is…',
+   o:['afraid of technology','addicted to technology','skilled and knowledgeable with technology','employed in the tech industry'],
+   a:2,e:'"Savvy" = having practical knowledge and good judgement.'},
+  {id:5,u:1,t:'fill',q:'He was born and ___ in Buenos Aires — he\'s never lived anywhere else.',
+   a:'bred',e:'"Born and bred" = born and raised in a specific place.'},
+  {id:6,u:1,t:'mcq',q:'"A bit of a perfectionist" — what does the phrase "a bit of a" do to the meaning?',
+   o:['Intensifies the meaning strongly','Makes the quality sound positive','Softens or downplays the characteristic','Makes the register more formal'],
+   a:2,e:'"A bit of a" softens a trait — it\'s less extreme than just saying "a perfectionist."'},
+  {id:7,u:1,t:'mcq',q:'"Goal-oriented" describes someone who primarily…',
+   o:['plays competitive sports','focuses on achieving specific objectives','is very competitive with others','works in management roles'],
+   a:1,e:'"Goal-oriented" = focused on setting and reaching clear goals.'},
+
+  // ── Unit 2: Living Longer ──
+  {id:8,u:2,t:'fill',q:'___ are, most people would like to live a long and healthy life.',
+   a:'Chances',e:'"Chances are" = it is probable/likely that.'},
+  {id:9,u:2,t:'mcq',q:'"By leaps and bounds" means to progress…',
+   o:['slowly but steadily','dramatically and very rapidly','with great difficulty','one careful step at a time'],
+   a:1,e:'"By leaps and bounds" = very quickly and dramatically. Often used for growth.'},
+  {id:10,u:2,t:'mcq',q:'What is the key difference between "lifespan" and "healthspan"?',
+   o:['Lifespan = healthy years; healthspan = total years alive','Lifespan = total years alive; healthspan = years lived in good health','They mean exactly the same thing','Lifespan is for animals; healthspan is for humans'],
+   a:1,e:'Lifespan = how long you live. Healthspan = how long you live in GOOD health.'},
+  {id:11,u:2,t:'fill',q:'"Whether ___ travelling, reading, or cooking, your hobbies define your quality of life."',
+   a:"that's",e:'"Whether that\'s X or Y" introduces examples of a broader category.'},
+  {id:12,u:2,t:'mcq',q:'"Buck the trend" means to…',
+   o:['follow what everyone else is doing','go against the general trend or norm','start a brand new trend','put an end to an existing trend'],
+   a:1,e:'"Buck the trend" = do the opposite of what most people do.'},
+  {id:13,u:2,t:'fill',q:'Life expectancy has grown by leaps and ___ thanks to advances in medicine.',
+   a:'bounds',e:'"By leaps and bounds" is always used as a fixed phrase.'},
+  {id:14,u:2,t:'mcq',q:'"Healthspan" specifically refers to…',
+   o:['the total number of years a person lives','the years of life spent in reasonably good health','a person\'s complete medical history','genetic potential for long life'],
+   a:1,e:'Healthspan = healthy years. The goal of modern longevity research is to extend healthspan, not just lifespan.'},
+
+  // ── Unit 3: Words & Language ──
+  {id:15,u:3,t:'mcq',q:'The word "sinister" originally comes from the Latin word for…',
+   o:['right','left','evil','darkness'],
+   a:1,e:'"Sinister" comes from Latin "sinister" meaning "left." Left-handedness was considered unlucky in Roman times.'},
+  {id:16,u:3,t:'mcq',q:'Three dots (…) used in writing are called…',
+   o:['ellipsis','semicolon','colon','hyphen'],
+   a:0,e:'An ellipsis (…) indicates an omission, a pause, or a trailing thought.'},
+  {id:17,u:3,t:'fill',q:'A ___ connects two words or parts of a compound word, as in "well-known" or "twenty-one."',
+   a:'hyphen',e:'A hyphen (-) is shorter than a dash (—). A dash separates clauses; a hyphen joins words.'},
+  {id:18,u:3,t:'mcq',q:'A METAPHOR is…',
+   o:['A comparison using "like" or "as"','A direct comparison saying one thing IS another','A type of end rhyme scheme','A question asked for rhetorical effect'],
+   a:1,e:'Metaphor: "Life is a journey." Simile: "Life is LIKE a journey." The difference is "like" or "as."'},
+  {id:19,u:3,t:'mcq',q:'A semicolon (;) is best used to…',
+   o:['end a sentence completely','introduce a list after a colon','join two related independent clauses','indicate possession'],
+   a:2,e:'Semicolon joins two complete sentences that are closely related: "I was tired; I went to bed."'},
+  {id:20,u:3,t:'mcq',q:'"Conformity" means…',
+   o:['rebelling against social norms','following established norms and standards','creating entirely new rules','ignoring what others think'],
+   a:1,e:'"Conformity" = compliance with accepted standards, rules, or expectations.'},
+  {id:21,u:3,t:'fill',q:'In British English, the punctuation mark at the end of a sentence is called a "full stop." In American English, it is called a ___.',
+   a:'period',e:'Period (US English) = Full stop (UK English).'},
+
+  // ── Unit 4: Customs & the Past ──
+  {id:22,u:4,t:'mcq',q:'"Going Dutch" at a restaurant means…',
+   o:['visiting a Dutch restaurant','each person pays for their own meal','one person generously pays for everyone','taking turns paying each time'],
+   a:1,e:'"Going Dutch" = each person pays their own share of the bill.'},
+  {id:23,u:4,t:'fill',q:'When I was a child, we ___ have big Sunday dinners every week without fail. (past repeated habit)',
+   a:'would',e:'"Would" expresses a repeated past habit. "Used to" also works but "would" emphasises repetition.'},
+  {id:24,u:4,t:'mcq',q:'"No picnic" means…',
+   o:['a spontaneous outdoor meal','something very easy and enjoyable','something difficult or unpleasant','a type of informal social event'],
+   a:2,e:'"No picnic" = not easy; actually quite difficult or unpleasant.'},
+  {id:25,u:4,t:'mcq',q:'In British English, "hoovering" means…',
+   o:['hovering above the ground','vacuuming the floor','cleaning the windows','washing the dishes'],
+   a:1,e:'"Hoovering" comes from the Hoover brand name. Like "googling" comes from Google.'},
+  {id:26,u:4,t:'fill',q:'She ___ to be very quiet, but now she\'s one of the most outgoing people I know.',
+   a:'used',e:'"Used to" describes a past state or habit that is no longer true.'},
+  {id:27,u:4,t:'mcq',q:'"Shunned" means…',
+   o:['warmly welcomed by others','persistently avoided or socially rejected','publicly celebrated','frequently misunderstood'],
+   a:1,e:'"Shunned" = deliberately avoided or excluded by society or a group.'},
+  {id:28,u:4,t:'mcq',q:'Choose the correct form: "I ___ going to call you yesterday, but I completely forgot."',
+   o:['am','was','were','be'],
+   a:1,e:'"Was going to" = past intention that did NOT happen. Shows an unfulfilled plan.'},
+
+  // ── Unit 5: Media & News ──
+  {id:29,u:5,t:'mcq',q:'A small printed sheet of information distributed to people is called…',
+   o:['a tabloid','a leaflet','a newsletter','an obituary'],
+   a:1,e:'Leaflet = small printed sheet. Flyer = similar but often for advertising events.'},
+  {id:30,u:5,t:'mcq',q:'Why do newspaper HEADLINES use the simple present tense (not continuous or perfect)?',
+   o:['It is easier to write quickly','It sounds more dramatic and immediate, and saves space','It is a very recent stylistic rule','Simply to save printing costs'],
+   a:1,e:'Headlines use simple present for immediacy: "PM SIGNS DEAL" not "PM HAS SIGNED DEAL."'},
+  {id:31,u:5,t:'fill',q:'A piece written about someone who has recently died, published in a newspaper, is called an ___.',
+   a:'obituary',e:'An obituary = a death notice, usually including a short biography of the person.'},
+  {id:32,u:5,t:'mcq',q:'"Tabloids" are known for being…',
+   o:['serious quality newspapers','smaller newspapers with sensational stories and large photos','online-only news sources','official government publications'],
+   a:1,e:'Tabloids prioritise entertaining, sensational stories. Broadsheets focus on serious news.'},
+  {id:33,u:5,t:'mcq',q:'Passive voice in headlines like "THREE ARRESTED" focuses on…',
+   o:['who made the arrest','the people who were arrested','the arresting officers','the location of the arrest'],
+   a:1,e:'Passive voice shifts focus from the "doer" to the "receiver" of the action.'},
+  {id:34,u:5,t:'fill',q:'In headlines, articles like "a," "an," and "the" are often ___ to save space.',
+   a:'dropped',e:'Headline grammar: drop articles and auxiliary verbs. "PRESIDENT VISITS FRANCE" not "THE PRESIDENT IS VISITING FRANCE."'},
+  {id:35,u:5,t:'mcq',q:'Which is the correct headline form? "Scientists ___ breakthrough vaccine."',
+   o:['are discovering','discovered','discover','have discovered'],
+   a:2,e:'Headlines use simple present: "Scientists DISCOVER breakthrough vaccine."'},
+
+  // ── Unit 6: Contrast & Causative ──
+  {id:36,u:6,t:'mcq',q:'"Despite" must always be followed by…',
+   o:['a full clause with subject + verb','a noun phrase or gerund (-ing)','an adjective alone','an adverb'],
+   a:1,e:'"Despite + noun/gerund": "Despite the rain…" / "Despite being tired…" (NOT "Despite it rained")'},
+  {id:37,u:6,t:'fill',q:'___ being exhausted, she finished the entire project before the deadline.',
+   a:'Despite',e:'"Despite + gerund" for contrast without a full clause. "Although she was exhausted" uses a clause.'},
+  {id:38,u:6,t:'mcq',q:'Causative HAVE: "She had her hair ___ before the interview."',
+   o:['cut','cutting','to cut','cuts'],
+   a:0,e:'"Have + object + past participle" = causative: someone else does the action for you.'},
+  {id:39,u:6,t:'fill',q:'___ she was exhausted, she finished the entire project before the deadline.',
+   a:'Although',e:'"Although + clause" for contrast. "Despite" needs a noun/gerund, not a full clause.'},
+  {id:40,u:6,t:'mcq',q:'"Having said that" is used to introduce…',
+   o:['complete agreement with the previous point','a contrasting or qualifying point','a specific example','the final conclusion'],
+   a:1,e:'"Having said that" = however/but — acknowledges the previous point then adds contrast.'},
+  {id:41,u:6,t:'fill',q:'They got their wedding photos ___ by a renowned professional photographer.',
+   a:'printed',e:'"Get + object + past participle" = causative get. Someone else did the printing for them.'},
+  {id:42,u:6,t:'mcq',q:'"What is more" is a discourse marker used to…',
+   o:['ask a question about quantity','add a further supporting point','contrast two opposing ideas','signal the conclusion'],
+   a:1,e:'"What is more" = furthermore / additionally — used to add another supporting argument.'},
+
+  // ── Unit 7: Formal Writing ──
+  {id:43,u:7,t:'mcq',q:'A formal letter of complaint should be…',
+   o:['emotional and very personal','clear, factual, and professionally polite','brief and deliberately informal','filled with strong, emotive language'],
+   a:1,e:'Formal complaints must be professional: stick to facts, be polite, and structure arguments clearly.'},
+  {id:44,u:7,t:'fill',q:'A formal letter to an unknown recipient opens with "Dear ___ or Madam."',
+   a:'Sir',e:'"Dear Sir or Madam" when you do NOT know the name. If you know the name: "Dear Mr./Ms. Smith."'},
+  {id:45,u:7,t:'mcq',q:'"Well-meaning" describes someone who…',
+   o:['has good intentions (even if results are bad)','achieves great success','speaks articulately and clearly','has deep personal meaning'],
+   a:0,e:'"Well-meaning" = having good intentions. A well-meaning person might still cause problems.'},
+  {id:46,u:7,t:'fill',q:'Unfortunately, the promised improvements never ___ — nothing actually changed.',
+   a:'materialised',e:'"Materialise" (formal) = to become real or actual. Also spelled "materialize" (US).'},
+  {id:47,u:7,t:'mcq',q:'When you know the recipient\'s name, a formal letter closes with…',
+   o:['Yours faithfully','Yours sincerely','Best regards','Kind regards'],
+   a:1,e:'Rule: Know name → "Yours sincerely." Don\'t know name (Dear Sir/Madam) → "Yours faithfully."'},
+  {id:48,u:7,t:'mcq',q:'"Rectified" means…',
+   o:['made significantly worse','corrected or put right','completely ignored','officially reported to authorities'],
+   a:1,e:'"Rectify" = to correct or remedy a mistake or problem.'},
+  {id:49,u:7,t:'fill',q:'The product line was ___ due to serious and widespread safety concerns.',
+   a:'discontinued',e:'"Discontinued" = permanently stopped. Used for products, services, or programmes.'},
+
+  // ── Unit 8: Goals & Habits ──
+  {id:50,u:8,t:'fill',q:'I never seem to get ___ to answering emails — they just pile up.',
+   a:'around',e:'"Get around to (doing) something" = finally find time to do it.'},
+  {id:51,u:8,t:'mcq',q:'SMART goals: the "M" stands for…',
+   o:['Meaningful','Manageable','Measurable','Motivating'],
+   a:2,e:'SMART = Specific, Measurable, Achievable, Realistic, Time-bound.'},
+  {id:52,u:8,t:'mcq',q:'"Beat yourself up" means…',
+   o:['to exercise extremely hard','to criticise yourself excessively over a mistake','to compete fiercely against yourself','to get into a physical altercation'],
+   a:1,e:'"Beat yourself up" = be overly self-critical or guilty about something.'},
+  {id:53,u:8,t:'fill',q:'There will always be ___ in the road — setbacks are a natural part of any process.',
+   a:'bumps',e:'"Bumps in the road" = obstacles, difficulties, or setbacks along the way.'},
+  {id:54,u:8,t:'mcq',q:'"Map out" a plan means to…',
+   o:['draw a literal geographic map','get completely lost while planning','plan something carefully and in full detail','simply follow instructions given by others'],
+   a:2,e:'"Map out" = to plan something carefully, step by step, thinking ahead.'},
+  {id:55,u:8,t:'fill',q:'I really need to ___ down on how much time I spend scrolling through social media.',
+   a:'cut',e:'"Cut down on something" = gradually reduce the amount or frequency.'},
+  {id:56,u:8,t:'mcq',q:'"Crop up" means…',
+   o:['to harvest crops at season\'s end','to appear or arise unexpectedly','to cut something short abruptly','to grow plants in a crop field'],
+   a:1,e:'"Crop up" = appear or arise unexpectedly. "Problems kept cropping up."'},
+
+  // ── Unit 9: Happiness & Hygge ──
+  {id:57,u:9,t:'mcq',q:'"Hygge" is a concept that originates from…',
+   o:['Sweden','Norway','Denmark','Finland'],
+   a:2,e:'"Hygge" (pronounced "hoo-ga") is a Danish word for cosiness, warmth, and shared wellbeing.'},
+  {id:58,u:9,t:'fill',q:'She was absolutely on cloud ___ when she heard she\'d got the job!',
+   a:'nine',e:'"On cloud nine" = extremely happy and elated. Always "nine."'},
+  {id:59,u:9,t:'mcq',q:'"Put on a brave face" means…',
+   o:['wear a physical theatrical mask','pretend to be happy or okay despite feeling sad or worried','be genuinely and completely happy','bravely face your deepest fears'],
+   a:1,e:'"Put on a brave face" = hide your true negative feelings and appear positive for others.'},
+  {id:60,u:9,t:'mcq',q:'In "I feel truly content," "content" means…',
+   o:['material or subject matter','satisfied and at peace, not wanting more','extremely happy and very excited','slightly bored and restless'],
+   a:1,e:'"Content" (adjective) = satisfied; quietly happy. Different from the noun "content" (material).'},
+  {id:61,u:9,t:'fill',q:'The Danish concept of "hygge" encompasses cosiness, indulgence, and ___.',
+   a:'contentment',e:'The three pillars: cosiness (physical comfort), indulgence (treating yourself), contentment (emotional satisfaction).'},
+  {id:62,u:9,t:'mcq',q:'"Elated" means…',
+   o:['exhausted and drained','extremely happy and excited','deeply disappointed','calm and at peace'],
+   a:1,e:'"Elated" = on a high; intensely happy, often after good news.'},
+  {id:63,u:9,t:'fill',q:'She loves having a ___-in on Sunday mornings and not getting up until noon.',
+   a:'lie',e:'"Having a lie-in" = staying in bed late in the morning by choice.'},
+
+  // ── Unit 10: Public Speaking ──
+  {id:64,u:10,t:'mcq',q:'"Stage fright" refers to…',
+   o:['a general fear of going to the theatre','extreme nervousness before or during a public performance','a strong dislike of theatrical performances','the experience of forgetting all your lines'],
+   a:1,e:'"Stage fright" = performance anxiety; fear or nervousness about speaking or performing publicly.'},
+  {id:65,u:10,t:'fill',q:'Before big presentations, my ___ goes dry and I can barely speak.',
+   a:'mouth',e:'"Mouth goes dry" is a very common physical symptom of nerves/stage fright.'},
+  {id:66,u:10,t:'mcq',q:'"A bundle of nerves" describes someone who is…',
+   o:['completely relaxed and calm','totally composed and confident','extremely nervous and anxious','only mildly and pleasantly excited'],
+   a:2,e:'"A bundle of nerves" = very nervous person. Often used before an important event.'},
+  {id:67,u:10,t:'mcq',q:'Grammar: "It\'s high time you ___ more public speaking practice."',
+   o:['get','got','have gotten','are getting'],
+   a:1,e:'"It\'s high time + past simple" — expresses that something is overdue and should happen now.'},
+  {id:68,u:10,t:'fill',q:'She gets so ___ before speaking that she can\'t sit still and keeps fidgeting.',
+   a:'fidgety',e:'"Fidgety" = unable to keep still, usually due to nervousness or impatience.'},
+  {id:69,u:10,t:'mcq',q:'A strong talk introduction should primarily…',
+   o:['immediately reveal all the key conclusions','present all the data and statistics upfront','hook the audience and preview the talk\'s structure','begin by thanking every single person present'],
+   a:2,e:'A good opening grabs attention and signals what\'s coming — it does NOT give away the conclusions.'},
+  {id:70,u:10,t:'mcq',q:'"Butterflies in your stomach" describes…',
+   o:['literally seeing butterflies nearby','a nervous, fluttery feeling before something important','physical nausea and illness','intense hunger pangs'],
+   a:1,e:'"Butterflies in your stomach" = the physical sensation of nervousness before something important.'},
+
+  // ── Unit 11: Blue Zones ──
+  {id:71,u:11,t:'mcq',q:'The Okinawan principle "hara hachi bu" means to eat until you are…',
+   o:['completely and totally full','roughly 80% full','hungry once more','satisfied by the flavours alone'],
+   a:1,e:'"Hara hachi bu" = stop eating when 80% full. A key longevity practice in Okinawa (a Blue Zone).'},
+  {id:72,u:11,t:'fill',q:'A ___ is a person who has reached or surpassed the age of 100.',
+   a:'centenarian',e:'Centenarian = 100+ years old. Blue Zones have unusually high concentrations of centenarians.'},
+  {id:73,u:11,t:'mcq',q:'"Unlike" is used to express…',
+   o:['similarity between two things','contrast between two things','an example of a general point','a logical conclusion from evidence'],
+   a:1,e:'"Unlike X, Y does…" = contrast. Compare with "Like X, Y also does…" = similarity.'},
+  {id:74,u:11,t:'fill',q:'Blue Zones are geographic regions renowned for exceptional human ___ — people live far longer.',
+   a:'longevity',e:'"Longevity" = long life. Blue Zones include Sardinia (Italy), Okinawa (Japan), and Nicoya (Costa Rica).'},
+  {id:75,u:11,t:'mcq',q:'"Whereas" is used to…',
+   o:['give a reason for an action','contrast two notably different facts or situations','add extra supporting information','show a cause-and-effect relationship'],
+   a:1,e:'"Whereas" = while/on the other hand — used for direct contrast between two things.'},
+  {id:76,u:11,t:'fill',q:'___ fast food is popular across much of the US, Blue Zone diets are almost entirely plant-based.',
+   a:'While',e:'"While / Whereas / Although + clause" for contrast. All three work here.'},
+  {id:77,u:11,t:'mcq',q:'"Rather than" can be used to express…',
+   o:['only preference','only contrast between two things','both preference and contrast','neither preference nor contrast'],
+   a:2,e:'"Rather than" shows both: "I\'d walk rather than drive" (preference) and contrast between two options.'},
+
+  // ── Unit 12: Crime & Law ──
+  {id:78,u:12,t:'mcq',q:'"Perjury" is the crime of…',
+   o:['stealing money from your employer','lying under oath in a court of law','deliberately setting fire to property','publishing false statements about someone'],
+   a:1,e:'Perjury = lying while under oath in court. It is a serious criminal offence.'},
+  {id:79,u:12,t:'mcq',q:'"Arson" is the crime of…',
+   o:['theft of personal property','lying in court under oath','deliberately starting fires to destroy property','persistently following and harassing someone'],
+   a:2,e:'Arson = intentionally setting fire to a building or property.'},
+  {id:80,u:12,t:'fill',q:'He was accused ___ theft after CCTV footage was reviewed by police.',
+   a:'of',e:'"Accuse OF" a crime. Remember the pattern: accuse OF / arrest FOR / charge WITH.'},
+  {id:81,u:12,t:'mcq',q:'"Manslaughter" differs from murder primarily because…',
+   o:['it always involves a weapon','it is the unintentional killing of a person','it carries a less severe sentence','it always involves multiple victims'],
+   a:1,e:'Manslaughter = unintentional killing. Murder = intentional (with "malice aforethought").'},
+  {id:82,u:12,t:'fill',q:'She was charged ___ embezzlement after the internal audit revealed missing funds.',
+   a:'with',e:'"Charged WITH" a crime. The full pattern: accused OF → arrested FOR → charged WITH.'},
+  {id:83,u:12,t:'mcq',q:'"Bail" in legal terms refers to…',
+   o:['serving part of a prison sentence early','money deposited to secure release from custody before trial','being released early due to good behaviour','performing community service as a sentence'],
+   a:1,e:'Bail = money paid as a guarantee that an accused person will appear at trial; allows release before trial.'},
+  {id:84,u:12,t:'mcq',q:'"Embezzlement" specifically means…',
+   o:['physical assault on another person','the fraudulent theft of money entrusted by an employer','acts of property vandalism','offering or accepting bribes'],
+   a:1,e:'Embezzlement = fraudulently taking money from an employer or organization that trusted you with it.'},
+
+  // ── Unit 13: Fashion & the Environment ──
+  {id:85,u:13,t:'mcq',q:'"Binge" (as in binge-watching or binge-buying) means to…',
+   o:['do something in careful moderation','do something excessively over a short period','deliberately and consciously avoid something','thoroughly savour and enjoy something'],
+   a:1,e:'"Binge" = indulge excessively in a short time. Binge-eating, binge-drinking, binge-watching.'},
+  {id:86,u:13,t:'fill',q:'The factory illegally released industrial ___ into the river, causing severe ecological damage.',
+   a:'effluents',e:'"Effluents" = liquid waste, especially industrial or sewage waste discharged into waterways.'},
+  {id:87,u:13,t:'mcq',q:'In "Plastic is the main culprit," "culprit" refers to…',
+   o:['an innocent victim of a situation','the person or thing responsible for a problem','a key witness to an event','an unexpected source of help'],
+   a:1,e:'"Culprit" = whoever (or whatever) is responsible for something bad. Can refer to a thing, not just a person.'},
+  {id:88,u:13,t:'mcq',q:'Slow fashion primarily prioritises…',
+   o:['rapid production to meet latest trends','the cheapest possible materials and labour','quality, durability, and ethical sustainability','fast delivery and high trend turnover'],
+   a:2,e:'Slow fashion = thoughtful consumption; values quality, ethics, and the environment over speed and cheapness.'},
+  {id:89,u:13,t:'fill',q:'The fashion industry is one of the main ___ of global water and air pollution.',
+   a:'culprits',e:'"Culprit" can refer to an industry or system causing problems, not just an individual person.'},
+  {id:90,u:13,t:'mcq',q:'The Fashion Revolution movement primarily advocates for…',
+   o:['massively increasing global clothing production','full transparency and ethical practices in the fashion supply chain','making fashion cheaper and more accessible globally','expanding the luxury designer segment'],
+   a:1,e:'Fashion Revolution: "Who made my clothes?" — campaigns for supply chain transparency.'},
+  {id:91,u:13,t:'mcq',q:'The core environmental problem with fast fashion is…',
+   o:['using too many different colour dyes','generating massive amounts of waste and toxic pollution','making clothes that are too expensive','using natural fibres that decompose slowly'],
+   a:1,e:'Fast fashion = overproduction, textile waste, microplastic pollution, and toxic dyeing processes.'},
+
+  // ── Unit 14: Technology ──
+  {id:92,u:14,t:'mcq',q:'"Obsolete" describes something that is…',
+   o:['cutting-edge and very modern','no longer used, needed, or relevant','extremely expensive to purchase','found and used everywhere'],
+   a:1,e:'"Obsolete" = outdated; no longer in use. Technology becomes obsolete quickly.'},
+  {id:93,u:14,t:'mcq',q:'"Planned obsolescence" means…',
+   o:['planning for future technology requirements','deliberately designing products to fail or become outdated','designing for long-term sustainability','making software open-source and community-driven'],
+   a:1,e:'Planned obsolescence = intentionally building products to need replacement — drives repeat purchases.'},
+  {id:94,u:14,t:'fill',q:'"Ubiquitous" means ___. Smartphones are a perfect example — they\'re everywhere.',
+   a:'everywhere',e:'"Ubiquitous" = seeming to be present everywhere simultaneously. From Latin "ubique" (everywhere).'},
+  {id:95,u:14,t:'mcq',q:'Impersonal passive: "It ___ that smartphones negatively affect concentration."',
+   o:['is said','is saying','says','said'],
+   a:0,e:'"It is said/believed/thought/estimated/reported that…" = impersonal passive for reporting information.'},
+  {id:96,u:14,t:'mcq',q:'"Superfluous" means…',
+   o:['absolutely essential and necessary','of extremely high quality','unnecessary and excessive','far superior to alternatives'],
+   a:2,e:'"Superfluous" = more than needed; redundant; unnecessary.'},
+  {id:97,u:14,t:'fill',q:'"It is ___ that global temperatures will rise by 1.5°C before 2050." (use a reporting verb)',
+   a:'estimated',e:'"It is estimated/believed/thought/predicted/said that…" — choose based on certainty level.'},
+  {id:98,u:14,t:'mcq',q:'Personal passive: "Social media ___ to increase anxiety in teenagers."',
+   o:['are said','is saying','say','says'],
+   a:0,e:'"X is/are said to + infinitive" = personal passive. "Social media IS SAID TO increase anxiety."'},
+
+  // ── Unit 15: Accents & Dialects ──
+  {id:99,u:15,t:'mcq',q:'The key difference between "accent" and "dialect":',
+   o:['They mean exactly the same thing','Accent = pronunciation only; dialect = pronunciation + vocabulary + grammar','Dialect = only how words are pronounced','Accent only applies to written language'],
+   a:1,e:'Accent = HOW you say things (pronunciation). Dialect = a full language variety with its own vocabulary, grammar, AND pronunciation.'},
+  {id:100,u:15,t:'fill',q:'RP stands for "___ Pronunciation" — the traditional prestige British accent.',
+   a:'Received',e:'RP = Received Pronunciation. Historically considered the "correct" British accent, associated with BBC and upper classes.'},
+  {id:101,u:15,t:'mcq',q:'Approximately what percentage of British people actually speak traditional RP?',
+   o:['20%','10%','2%','50%'],
+   a:2,e:'Only about 2% of British people speak traditional RP — far less than commonly assumed.'},
+  {id:102,u:15,t:'mcq',q:'"Accentism" means…',
+   o:['the academic study of regional accents','prejudice or discrimination based on someone\'s accent','having a particularly strong regional accent','deliberately losing or suppressing your native accent'],
+   a:1,e:'"Accentism" = discrimination based on someone\'s accent. Like racism or sexism, but for how people speak.'},
+  {id:103,u:15,t:'fill',q:'MLE stands for Multicultural ___ English — an emerging urban British dialect.',
+   a:'London',e:'MLE (Multicultural London English) is a contact dialect influenced by Jamaican Creole, West African languages, and others.'},
+  {id:104,u:15,t:'mcq',q:'"Self-conscious" means…',
+   o:['very confident and comfortable in social situations','acutely and uncomfortably aware of how others perceive you','purely selfish and self-centred','temporarily in an unconscious state'],
+   a:1,e:'"Self-conscious" = embarrassed, awkward, or overly aware of yourself in a social situation.'},
+  {id:105,u:15,t:'fill',q:'His strong regional accent made him feel very ___ during formal job interviews.',
+   a:'self-conscious',e:'"Self-conscious" = the feeling of being awkwardly aware of yourself and how others judge you.'},
+
+  // ── Unit 16: Travel ──
+  {id:106,u:16,t:'mcq',q:'"Itchy feet" means…',
+   o:['a medical condition affecting the feet','a strong and persistent desire to travel and explore new places','general tiredness from too much walking','excitement specifically about food culture'],
+   a:1,e:'"Itchy feet" = a strong urge to travel and see new places. Feeling restless if you stay in one place.'},
+  {id:107,u:16,t:'fill',q:'We backpacked through Southeast Asia ___ a shoestring — just €15 a day for everything.',
+   a:'on',e:'"On a shoestring" = on a very tight, minimal budget. Always use "on."'},
+  {id:108,u:16,t:'mcq',q:'A "city break" is…',
+   o:['a very long extended vacation in a major city','a short trip of 2–4 days to explore a city','permanently relocating to a new city','taking a break from city life to go to the countryside'],
+   a:1,e:'"City break" = a short leisure trip (usually 2–4 days) to a city, often over a long weekend.'},
+  {id:109,u:16,t:'mcq',q:'"Tourist trap" refers to…',
+   o:['a stunningly beautiful scenic location','an overpriced, overcrowded attraction aimed at tourists','an official government travel warning','a local hidden gem unknown to tourists'],
+   a:1,e:'"Tourist trap" = a place that looks appealing but is overpriced and disappoints visitors.'},
+  {id:110,u:16,t:'fill',q:'She has a real soft ___ for small coastal fishing villages — she\'s obsessed with them.',
+   a:'spot',e:'"Soft spot for" = a particular fondness or affection for something or someone.'},
+  {id:111,u:16,t:'mcq',q:'"Nowhere near as + adjective + as" is used to express that something is…',
+   o:['very similar to something else','much less than something else, emphasising a large gap','a surprising exaggeration for effect','an understatement to sound modest'],
+   a:1,e:'"Nowhere near as good as" = not even close to being as good. Very emphatic negative comparison.'},
+  {id:112,u:16,t:'fill',q:'Rome is ___ far the most beautiful city I have ever visited.',
+   a:'by',e:'"By far" = by a very large margin; easily the most/best/worst. Always "by far."'},
+
+  // ── Unit 17: Complaints & Emotions ──
+  {id:113,u:17,t:'mcq',q:'"Pet peeve" means…',
+   o:['a beloved and treasured pet animal','something that particularly and consistently irritates you','a formal written complaint','an extended, passionate rant'],
+   a:1,e:'"Pet peeve" = a minor thing that annoys you more than it should. Everyone has different pet peeves.'},
+  {id:114,u:17,t:'fill',q:'It really ___ me off when people use their phones during a meal.',
+   a:'ticks',e:'"Ticks me off" = irritates or annoys me. Also: "winds me up," "gets on my nerves," "burns me up."'},
+  {id:115,u:17,t:'mcq',q:'"Vent" your emotions means to…',
+   o:['open a window to allow fresh air in','release built-up frustration by expressing your feelings','make a formal, official complaint to an authority','become visibly and explosively angry at someone'],
+   a:1,e:'"Vent" = release pent-up frustration by talking about it. After venting, you usually feel better.'},
+  {id:116,u:17,t:'mcq',q:'"Disgruntled" means…',
+   o:['extremely happy and thoroughly satisfied','dissatisfied, annoyed, and resentful','deeply confused and uncertain about something','unusually energetic and enthusiastic'],
+   a:1,e:'"Disgruntled" = feeling dissatisfied, annoyed, and complaining about it. Disgruntled employees, disgruntled customers.'},
+  {id:117,u:17,t:'fill',q:'After the terrible day at work, she just needed to ___ to a friend for an hour.',
+   a:'vent',e:'"Vent to someone" = express your frustrations to them for emotional relief.'},
+  {id:118,u:17,t:'mcq',q:'"Rage-baiting" means…',
+   o:['fishing as an activity when feeling angry','deliberately posting provocative content to trigger angry reactions and boost engagement','trying to actively suppress and hide your own anger','learning healthier techniques to manage your anger'],
+   a:1,e:'"Rage-baiting" = content designed to provoke outrage. More engagement = more revenue for creators.'},
+  {id:119,u:17,t:'fill',q:'The constant noise from the construction site next door is really getting me ___.',
+   a:'down',e:'"Get someone down" = depress, discourage, or demoralise someone over time.'},
+
+  // ── Bonus: Cross-Unit Idioms ──
+  {id:120,u:1,t:'mcq',q:'"Out of sight, out of mind" means…',
+   o:['You tend to forget things you can\'t see','You miss things deeply when away from them','You see and remember everything you encounter','The mind is always more powerful than sight'],
+   a:0,e:'"Out of sight, out of mind" = when something isn\'t visible or nearby, you stop thinking about it.'},
+  {id:121,u:4,t:'mcq',q:'"Sweep something under the carpet" means…',
+   o:['To clean the house very thoroughly','To hide or ignore a problem hoping it disappears','To quickly redecorate a room','To solve a problem rapidly before anyone notices'],
+   a:1,e:'"Sweep under the carpet" = conceal a problem rather than dealing with it properly.'},
+  {id:122,u:9,t:'mcq',q:'"Wide awake" is the opposite of…',
+   o:['fast asleep','tired','drowsy','resting quietly'],
+   a:0,e:'"Wide awake" = completely and fully awake. "Fast asleep" = in a deep sleep. These are fixed collocation pairs.'},
+
+  // ── Error Correction & Extra Questions ──
+  // Unit 1
+  {id:123,u:1,t:'error',q:'Find and correct the error:\n"She\'s very goal-orientated and a quick leaner."',
+   a:'learner',e:'"Learner" not "leaner." A leaner is someone who leans. A learner is someone who learns.'},
+  {id:124,u:1,t:'fill',q:'He\'s ___ into jazz — he listens to it every single day.',
+   a:'really/totally/so',e:'"Be into something" = be very interested in it. You can intensify with really/totally/so.'},
+
+  // Unit 2
+  {id:125,u:2,t:'error',q:'Find and correct the error:\n"Scientists are studying ways to extend the lifespan AND healthspan of humans, weather that\'s through diet or exercise."',
+   a:'whether',e:'"Whether" (conjunction for alternatives) NOT "weather" (rain/sun). Classic confusion.'},
+  {id:126,u:2,t:'fill',q:'The population of this city has grown by leaps and bounds — it\'s nearly ___ its size in ten years.',
+   a:'doubled',e:'Growing "by leaps and bounds" implies dramatic growth, such as doubling.'},
+
+  // Unit 3
+  {id:127,u:3,t:'error',q:'Find and correct the error:\n"He used a metaphore to describe how he felt — \'Life is a rollercoaster.\'"',
+   a:'metaphor',e:'"Metaphor" — no final E. Common misspelling.'},
+  {id:128,u:3,t:'mcq',q:'Which sentence uses an APOSTROPHE correctly?',
+   o:["The cat licked it's paws.","The students books were on the table.","It's a beautiful day today.","The dog wagged it's tail."],
+   a:2,e:'"It\'s" = it is (contraction). "Its" = belonging to it (possessive, NO apostrophe). "The students\' books" needs apostrophe after the s.'},
+
+  // Unit 4
+  {id:129,u:4,t:'error',q:'Find and correct the error:\n"When I was a child, I used to going to the market every Saturday."',
+   a:'go',e:'"Used to + infinitive" (base form), NOT "used to going." "Used to go" is correct.'},
+  {id:130,u:4,t:'mcq',q:'Which sentence expresses a past HABIT correctly?',
+   o:['I was used to eat breakfast early.','I would eat breakfast early every day.','I used to eating breakfast early.','I was eating breakfast early every day in the past.'],
+   a:1,e:'"Would + base verb" correctly expresses a repeated past habit. "Used to eat" (not "used to eating") also works.'},
+
+  // Unit 5
+  {id:131,u:5,t:'error',q:'Rewrite this as a headline (remove articles and use simple present):\n"The government has announced a new plan."',
+   a:'Government announces new plan',e:'Headline rules: drop "The," change present perfect to simple present.'},
+  {id:132,u:5,t:'mcq',q:'Which is written in passive voice?',
+   o:['The police arrested three suspects.','Three suspects were arrested by police.','Police caught three suspects.','Three suspects ran from the police.'],
+   a:1,e:'Passive = "be + past participle." "Three suspects WERE ARRESTED" is passive; the doer (police) is optional.'},
+
+  // Unit 6
+  {id:133,u:6,t:'error',q:'Find and correct the error:\n"Despite she was tired, she finished the marathon."',
+   a:'Despite being tired / Although she was tired',e:'"Despite" needs a noun/gerund, NOT a clause with subject+verb. Use "Although she was tired" OR "Despite being tired."'},
+  {id:134,u:6,t:'fill',q:'She ___ her car serviced at the garage last week. (causative)',
+   a:'had/got',e:'"Have/Get + object + past participle" = causative. Someone else did the service.'},
+
+  // Unit 7
+  {id:135,u:7,t:'error',q:'Find and correct the error in this formal letter ending:\n"Dear Mr. Smith, ... Yours faithfully, Franco"',
+   a:'Yours sincerely',e:'Rule: know the name → "Yours sincerely." "Yours faithfully" is only for "Dear Sir/Madam."'},
+  {id:136,u:7,t:'fill',q:'I am writing to ___ my dissatisfaction with the service I received. (formal verb)',
+   a:'express',e:'"I am writing to express…" is a standard formal letter opening for complaints.'},
+
+  // Unit 8
+  {id:137,u:8,t:'error',q:'Find and correct the error:\n"It\'s high time you start taking your goals more seriously."',
+   a:'started',e:'"It\'s high time + past simple." "It\'s high time you STARTED" — the past tense gives urgency.'},
+  {id:138,u:8,t:'mcq',q:'Which phrase means to gradually reduce something?',
+   o:['cut out','cut down on','cut off','cut up'],
+   a:1,e:'"Cut down on" = gradually reduce. "Cut out" = stop completely. "Cut off" = disconnect. "Cut up" = slice.'},
+
+  // Unit 9
+  {id:139,u:9,t:'error',q:'Find and correct the error:\n"After the good news, she felt very elated and on the cloud nine."',
+   a:'on cloud nine',e:'"On cloud nine" — no article "the." It is always just "on cloud nine."'},
+  {id:140,u:9,t:'fill',q:'He put on a brave ___ even though he was devastated inside.',
+   a:'face',e:'"Put on a brave face" = pretend to be okay when you\'re not. Always "face."'},
+
+  // Unit 10
+  {id:141,u:10,t:'error',q:'Find and correct the error:\n"Before the presentation, I always get butterflies on my stomach."',
+   a:'in',e:'"Butterflies IN your stomach" — always "in," not "on."'},
+  {id:142,u:10,t:'mcq',q:'Which describes the physical symptom correctly?',
+   o:['My mouth gets sweaty before speeches.','My palms go dry before speeches.','My mouth goes dry and my palms get sweaty before speeches.','My palms go dry and my mouth gets sweaty.'],
+   a:2,e:'Fixed collocations: "mouth GOES DRY" and "palms GET SWEATY." These are not interchangeable.'},
+
+  // Unit 11
+  {id:143,u:11,t:'error',q:'Find and correct the error:\n"Unlike of other regions, Blue Zones have very high rates of centenarians."',
+   a:'Unlike other regions',e:'"Unlike" is a preposition — it is NEVER followed by "of." "Unlike other regions" is correct.'},
+  {id:144,u:11,t:'fill',q:'She eats ___ hachi bu — stopping before she feels completely full.',
+   a:'hara',e:'"Hara hachi bu" = Okinawan principle: eat until 80% full. Both words are needed.'},
+
+  // Unit 12
+  {id:145,u:12,t:'error',q:'Find and correct the error:\n"He was accused for stealing money from the company."',
+   a:'accused of',e:'"Accuse OF" — never "for." Remember: accuse OF / arrest FOR / charge WITH.'},
+  {id:146,u:12,t:'fill',q:'The difference between murder and manslaughter is ___. (one word)',
+   a:'intent/intention',e:'Murder requires intent (mens rea). Manslaughter is unintentional killing.'},
+
+  // Unit 13
+  {id:147,u:13,t:'error',q:'Find and correct the error:\n"Fast fashion is one of the most culprits of water pollution."',
+   a:'one of the main culprits / one of the biggest culprits',e:'"One of the MAIN/BIGGEST culprits" — "most" doesn\'t collocate with "culprits." Use "main" or "biggest."'},
+  {id:148,u:13,t:'mcq',q:'Slow fashion is to fast fashion as "quality" is to…',
+   o:['quantity','speed','price','colour'],
+   a:0,e:'Slow fashion prioritises quality over quantity. Fast fashion = mass production of low-quality garments.'},
+
+  // Unit 14
+  {id:149,u:14,t:'error',q:'Find and correct the error:\n"It is thought that smartphones are said affecting concentration."',
+   a:'It is thought that smartphones affect concentration. / Smartphones are said to affect concentration.',e:'You can\'t mix both impersonal ("It is thought that…") and personal ("…are said") passive in one sentence. Use one or the other.'},
+  {id:150,u:14,t:'fill',q:'Many electronics are designed with ___ obsolescence — they break down just after the warranty expires.',
+   a:'planned',e:'"Planned obsolescence" = deliberate design strategy to limit product lifespan.'},
+
+  // Unit 15
+  {id:151,u:15,t:'error',q:'Find and correct the error:\n"Her accent really hampers her to fit in with the group."',
+   a:'hampers her ability to fit in / prevents her from fitting in',e:'"Hamper" = to hinder/prevent. "Hamper someone TO do" is wrong. Use "hamper someone\'s ability to do" or "prevent from doing."'},
+  {id:152,u:15,t:'mcq',q:'Someone who faces prejudice because of their regional accent is a victim of…',
+   o:['dialectism','accentism','linguicism','phoneticism'],
+   a:1,e:'"Accentism" = discrimination based on accent. The term was coined by researchers studying language-based prejudice.'},
+
+  // Unit 16
+  {id:153,u:16,t:'error',q:'Find and correct the error:\n"Paris is nowhere near as crowded than Rome in summer."',
+   a:'as crowded as',e:'"Nowhere near as + adj + AS" — NOT "than." "As…as" is the correct structure for this comparison.'},
+  {id:154,u:16,t:'fill',q:'She has itchy ___ and hasn\'t stayed in one place for more than six months.',
+   a:'feet',e:'"Itchy feet" = constant desire to travel and move to new places.'},
+
+  // Unit 17
+  {id:155,u:17,t:'error',q:'Find and correct the error:\n"She needed to vent her emotions to, so she called her best friend."',
+   a:'She needed to vent, so she called her best friend.',e:'"Vent" is used without "to" when no recipient is mentioned, OR "vent TO someone" when the recipient IS mentioned. "Vent her emotions to" is incorrect.'},
+  {id:156,u:17,t:'fill',q:'Constant negativity on social media can really get you ___.',
+   a:'down',e:'"Get someone down" = gradually depress or demoralise. Different from "get someone down to" (bring to a place).'},
+];
+
+// ══════════════════════════════════════════════════════
+//  UNIT DEFINITIONS
+// ══════════════════════════════════════════════════════
+const UNITS = [
+  {id:1,  name:'Introducing Yourself', sub:'Personality & identity',            emoji:'👋', color:'#58CC02', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-190228'},
+  {id:2,  name:'Living Longer',        sub:'Health & longevity',                emoji:'🌿', color:'#1CB0F6', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-200123'},
+  {id:3,  name:'Words & Language',     sub:'Vocabulary & punctuation',          emoji:'📝', color:'#CE82FF', link:'https://www.bbc.co.uk/bitesize/guides/z2vfv9q/revision/1'},
+  {id:4,  name:'Customs & the Past',   sub:'Past habits & culture',             emoji:'🕰️', color:'#FFC800', link:'https://www.perfect-english-grammar.com/used-to.html'},
+  {id:5,  name:'Media & News',         sub:'Journalism & headlines',            emoji:'📰', color:'#FF4B4B', link:'https://www.bbc.co.uk/learningenglish/english/course/upper-intermediate/unit-18/session-1'},
+  {id:6,  name:'Contrast & Causative', sub:'Grammar structures',                emoji:'⚡', color:'#1CB0F6', link:'https://www.perfect-english-grammar.com/causative.html'},
+  {id:7,  name:'Formal Writing',       sub:'Letters & formal language',         emoji:'✉️', color:'#58CC02', link:'https://www.bbc.co.uk/learningenglish/english/course/upper-intermediate/unit-9/session-1'},
+  {id:8,  name:'Goals & Habits',       sub:'Productivity & SMART goals',        emoji:'🎯', color:'#FFC800', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-211118'},
+  {id:9,  name:'Happiness & Hygge',    sub:'Emotions & wellbeing',              emoji:'☀️', color:'#FF9500', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-190110'},
+  {id:10, name:'Public Speaking',      sub:'Presentations & performance',       emoji:'🎤', color:'#CE82FF', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-180208'},
+  {id:11, name:'Blue Zones',           sub:'Longevity & contrast connectors',   emoji:'💙', color:'#1CB0F6', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-200716'},
+  {id:12, name:'Crime & Law',          sub:'Legal vocabulary & passives',       emoji:'⚖️', color:'#FF4B4B', link:'https://www.perfect-english-grammar.com/passive-voice.html'},
+  {id:13, name:'Fashion & Planet',     sub:'Environment & slow fashion',        emoji:'🌍', color:'#58CC02', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-181018'},
+  {id:14, name:'Technology',           sub:'Obsolescence & impersonal passive', emoji:'📱', color:'#CE82FF', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-190307'},
+  {id:15, name:'Accents & Dialects',   sub:'Language variety & identity',       emoji:'🗣️', color:'#FFC800', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-190207'},
+  {id:16, name:'Travel',               sub:'Expressions & comparatives',        emoji:'✈️', color:'#1CB0F6', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-190523'},
+  {id:17, name:'Complaints',           sub:'Emotions & venting',                emoji:'😤', color:'#FF4B4B', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english/ep-181115'},
+];
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let S = {};
+
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function loadState() {
+  const defaults = {
+    streak:0, lastDate:null, xp:0,
+    totalAnswered:0, totalCorrect:0,
+    todayCount:0, todayDate:null, goalCelebrated:false,
+    weights:{}, unitProgress:{}, notifOn:false,
+    history:{}, achievements:[],
+  };
+  try { S = {...defaults, ...JSON.parse(localStorage.getItem('eh_state')||'{}')}; }
+  catch(e) { S = {...defaults}; }
+
+  Q.forEach(q => { if(S.weights[q.id]==null) S.weights[q.id]=1.0; });
+  UNITS.forEach(u => { if(!S.unitProgress[u.id]) S.unitProgress[u.id]={c:0,t:0}; });
+
+  // Streak calculation
+  const td = today();
+  if(S.lastDate && S.lastDate !== td) {
+    const diff = Math.round((new Date(td)-new Date(S.lastDate))/(864e5));
+    if(diff > 1) S.streak = 0;
+  }
+
+  // Reset daily if new day
+  if(S.todayDate !== td) {
+    S.todayCount = 0;
+    S.goalCelebrated = false;
+    S.todayDate = td;
+  }
+}
+
+function save() { localStorage.setItem('eh_state', JSON.stringify(S)); }
+
+// ══════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  const nb = document.getElementById('nav-'+name);
+  if(nb) nb.classList.add('active');
+  ({home:renderHome, units:renderUnits, progress:renderProgress, settings:renderSettings}[name]||noop)();
+}
+function noop(){}
+
+// ══════════════════════════════════════════════════════
+//  RENDER HOME
+// ══════════════════════════════════════════════════════
+function renderHome() {
+  document.getElementById('streakNum').textContent = S.streak;
+  document.getElementById('xpNum').textContent = S.xp;
+  document.getElementById('goalNum').textContent = S.todayCount;
+  const pct = Math.min(100, S.todayCount*10);
+  document.getElementById('goalFill').style.width = pct+'%';
+  document.getElementById('goalStatus').textContent =
+    S.todayCount>=10 ? '🎉 Daily goal complete! Amazing work!' : `${10-S.todayCount} more question${S.todayCount===9?'':'s'} to go!`;
+
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  document.getElementById('installBanner').classList.toggle('show', isIOS && !navigator.standalone);
+
+  const el = document.getElementById('homeUnits');
+  el.innerHTML = '';
+  UNITS.forEach(u => {
+    const p = S.unitProgress[u.id], pct2 = p.t>0 ? Math.min(100, Math.round(p.c/p.t*100)) : 0;
+    const d = document.createElement('div');
+    d.className='unit-mini';
+    d.innerHTML=`
+      <div class="unit-emoji" style="background:${u.color}22">${u.emoji}</div>
+      <div class="unit-mini-info">
+        <div class="unit-mini-name">${u.name}</div>
+        <div class="unit-mini-bar"><div class="unit-mini-fill" style="width:${pct2}%;background:${u.color}"></div></div>
+      </div>
+      <div class="unit-pct" style="color:${u.color}">${pct2}%</div>`;
+    d.onclick=()=>startUnitQuiz(u.id);
+    el.appendChild(d);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER UNITS
+// ══════════════════════════════════════════════════════
+function renderUnits() {
+  const el = document.getElementById('unitCards');
+  el.innerHTML='';
+  UNITS.forEach(u => {
+    const p = S.unitProgress[u.id], pct = p.t>0 ? Math.min(100, Math.round(p.c/p.t*100)) : 0;
+    const d = document.createElement('div');
+    d.className='unit-card';
+    d.innerHTML=`
+      <div class="unit-card-row">
+        <div class="unit-icon-lg" style="background:${u.color}22">${u.emoji}</div>
+        <div class="unit-card-info">
+          <div class="unit-card-name">Unit ${u.id}: ${u.name}</div>
+          <div class="unit-card-sub">${u.sub}</div>
+        </div>
+        <div class="unit-card-pct" style="color:${u.color}">${pct}%</div>
+      </div>
+      <div class="unit-card-bar"><div class="unit-card-fill" style="width:${pct}%;background:${u.color}"></div></div>
+      ${u.link?`<div style="margin-top:10px;"><a href="${u.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:12px;color:var(--blue);text-decoration:none;">📖 Theory & extra reading →</a></div>`:''}
+    `;
+    d.onclick=()=>startUnitQuiz(u.id);
+    el.appendChild(d);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER PROGRESS
+// ══════════════════════════════════════════════════════
+function renderProgress() {
+  document.getElementById('pStreak').textContent = S.streak;
+  document.getElementById('pXP').textContent = S.xp;
+  document.getElementById('pCorrect').textContent = S.totalCorrect;
+  document.getElementById('pTotal').textContent = S.totalAnswered;
+  const el = document.getElementById('progressUnits');
+  el.innerHTML='';
+  UNITS.forEach(u=>{
+    const p=S.unitProgress[u.id], pct=p.t>0?Math.min(100,Math.round(p.c/p.t*100)):0;
+    const d=document.createElement('div');
+    d.className='unit-mini';
+    d.style.cursor='default';
+    d.innerHTML=`
+      <div class="unit-emoji" style="background:${u.color}22">${u.emoji}</div>
+      <div class="unit-mini-info">
+        <div class="unit-mini-name">${u.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${p.c}/${p.t} correct</div>
+        <div class="unit-mini-bar"><div class="unit-mini-fill" style="width:${pct}%;background:${u.color}"></div></div>
+      </div>
+      <div class="unit-pct" style="color:${u.color}">${pct}%</div>`;
+    el.appendChild(d);
+  });
+  renderCalendar();
+  renderAchievements();
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER SETTINGS
+// ══════════════════════════════════════════════════════
+function renderSettings() {
+  const k = localStorage.getItem('eh_apikey');
+  document.getElementById('apiKeyInput').value = k ? '••••••••••••••••••' : '';
+  document.getElementById('notifToggle').classList.toggle('on', S.notifOn);
+  // Q count
+  const qc = document.getElementById('settingsQCount');
+  if(qc) qc.textContent = `${Q.length} questions · ${UNITS.length} units`;
+  // Custom units list
+  const cu = JSON.parse(localStorage.getItem('eh_custom_units')||'[]');
+  const section = document.getElementById('customUnitsSection');
+  const list = document.getElementById('customUnitsList');
+  if(cu.length > 0) {
+    section.style.display='block';
+    list.innerHTML = cu.map(u=>`
+      <div class="custom-unit-row">
+        <span style="font-size:22px">${u.emoji}</span>
+        <div>
+          <div style="font-size:14px;font-weight:700">Unit ${u.id}: ${u.name}</div>
+          <div style="font-size:12px;color:var(--muted)">${u.sub}</div>
+        </div>
+        <button class="custom-unit-del" onclick="deleteCustomUnit(${u.id})">🗑</button>
+      </div>`).join('');
+  } else {
+    section.style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  QUIZ ENGINE
+// ══════════════════════════════════════════════════════
+const SESSION = 10;
+let session=[], idx=0, answered=false;
+
+function pickQuestion(exclude=[], unitId=null) {
+  let pool = Q.filter(q=>!exclude.includes(q.id) && (!unitId || q.unit===unitId));
+  if(!pool.length) pool = Q.filter(q=>!unitId || q.unit===unitId);
+  if(!pool.length) pool = Q;
+  const total = pool.reduce((s,q)=>s+(S.weights[q.id]||1),0);
+  let r = Math.random()*total;
+  for(const q of pool){ r-=(S.weights[q.id]||1); if(r<=0) return q; }
+  return pool[pool.length-1];
+}
+
+function buildSession(unitId=null) {
+  session=[]; const used=[];
+  for(let i=0;i<SESSION;i++){
+    const q=pickQuestion(used,unitId);
+    session.push(q); used.push(q.id);
+  }
+}
+
+function startQuiz() { buildSession(); idx=0; answered=false; enterQuizView(); renderQ(); }
+function startUnitQuiz(uid) { buildSession(uid); idx=0; answered=false; enterQuizView(); renderQ(); }
+
+function enterQuizView() {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-quiz').classList.add('active');
+  document.getElementById('feedbackBar').classList.remove('show');
+}
+
+function exitQuiz() { showView('home'); }
+
+function renderQ() {
+  const q = session[idx];
+  const u = UNITS.find(u=>u.id===q.u);
+  document.getElementById('quizBarFill').style.width=(idx/SESSION*100)+'%';
+  document.getElementById('quizCounter').textContent=`${idx+1}/${SESSION}`;
+  document.getElementById('feedbackBar').classList.remove('show');
+  answered=false;
+  document.getElementById('quizContent').innerHTML=`
+    <div class="quiz-unit-tag">Unit ${q.u}: ${u.name}</div>
+    <div class="quiz-type-badge">${q.t==='mcq'?'Multiple Choice':q.t==='error'?'Error Correction':'Fill in the Blank'}</div>
+    <div class="quiz-q" style="white-space:pre-line">${q.q}</div>
+    ${q.t==='mcq'?mcqHTML(q):q.t==='error'?errorHTML(q):fillHTML(q)}`;
+}
+
+function mcqHTML(q){
+  return `<div class="options">${q.o.map((opt,i)=>
+    `<button class="opt-btn" onclick="answerMCQ(${q.id},${i})" data-i="${i}">
+      <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
+}
+
+function fillHTML(q){
+  return `<input id="fillIn" class="fill-input" type="text" placeholder="Type your answer…"
+    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+    onkeydown="if(event.key==='Enter')answerFill(${q.id})">
+  <button class="btn-primary" onclick="answerFill(${q.id})">Check Answer</button>`;
+}
+
+function errorHTML(q){
+  return `<div style="background:rgba(255,75,75,.08);border:1px solid var(--red);border-radius:12px;padding:14px;margin-bottom:14px;font-size:14px;color:var(--muted);line-height:1.6;">
+    ✏️ <em>Find the error and write the corrected word or phrase.</em>
+  </div>
+  <input id="fillIn" class="fill-input" type="text" placeholder="Type the correction…"
+    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+    onkeydown="if(event.key==='Enter')answerFill(${q.id})">
+  <button class="btn-primary" onclick="answerFill(${q.id})">Check</button>`;
+}
+
+function answerMCQ(qId, sel) {
+  if(answered) return; answered=true;
+  const q=Q.find(q=>q.id===qId);
+  const ok = sel===q.a;
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
+    b.onclick=null;
+    if(i===q.a) b.classList.add('correct');
+    else if(i===sel&&!ok) b.classList.add('wrong');
+  });
+  processAnswer(q, ok);
+}
+
+function answerFill(qId) {
+  if(answered) return;
+  const input=document.getElementById('fillIn');
+  const val=(input.value||'').trim().toLowerCase();
+  if(!val) return;
+  answered=true;
+  const q=Q.find(q=>q.id===qId);
+  const accepted=(q.a+'').toLowerCase().split('/').map(s=>s.trim());
+  const ok=accepted.some(a=>val===a||val===a.replace(/\s+/g,''));
+  input.classList.add(ok?'correct':'wrong');
+  input.disabled=true;
+  const btn=document.querySelector('#view-quiz .btn-primary');
+  if(btn) btn.disabled=true;
+  processAnswer(q, ok);
+}
+
+function processAnswer(q, ok) {
+  // Spaced repetition
+  S.weights[q.id] = ok
+    ? Math.max(0.1, S.weights[q.id]*0.5)
+    : Math.min(10,  S.weights[q.id]*2.5);
+
+  // XP
+  S.xp += ok ? 10 : 2;
+  S.totalAnswered++;
+  if(ok) S.totalCorrect++;
+
+  // Unit progress
+  S.unitProgress[q.u].t++;
+  if(ok) S.unitProgress[q.u].c++;
+
+  // Streak
+  const td=today();
+  const first = S.todayCount===0;
+  S.todayCount++;
+  if(first){
+    if(!S.lastDate){ S.streak=1; }
+    else {
+      const diff=Math.round((new Date(td)-new Date(S.lastDate))/864e5);
+      if(diff===1) S.streak++;
+      else if(diff>1) S.streak=1;
+    }
+    S.lastDate=td;
+    S.todayDate=td;
+  }
+  // Record daily history
+  S.history[td] = (S.history[td]||0) + 1;
+  save();
+  checkAchievements();
+  showFeedback(q, ok);
+  if(S.todayCount===10 && !S.goalCelebrated){
+    S.goalCelebrated=true; save();
+    setTimeout(showCelebration, 1400);
+  }
+}
+
+function showFeedback(q, ok) {
+  const box=document.getElementById('feedbackBox');
+  const title=document.getElementById('feedbackTitle');
+  const exp=document.getElementById('feedbackExp');
+  const btn=document.getElementById('continueBtn');
+  box.className='feedback-box '+(ok?'correct':'wrong');
+  title.className='feedback-title '+(ok?'correct':'wrong');
+  title.textContent = ok ? '✓ Correct! +10 XP' : '✗ Incorrect +2 XP';
+  let txt = q.e;
+  if(!ok && q.t==='fill') txt=`Correct answer: "${q.a}". ${q.e}`;
+  else if(!ok && q.t==='mcq') txt=`Correct: "${q.o[q.a]}". ${q.e}`;
+  exp.textContent=txt;
+  btn.className='btn-continue '+(ok?'correct':'wrong');
+  btn.textContent=idx+1>=SESSION?'FINISH':'CONTINUE';
+  document.getElementById('feedbackBar').classList.add('show');
+}
+
+function nextQuestion() {
+  idx++;
+  if(idx>=SESSION){ exitQuiz(); return; }
+  renderQ();
+}
+
+// ══════════════════════════════════════════════════════
+//  CELEBRATION & CONFETTI
+// ══════════════════════════════════════════════════════
+let rafId=null;
+
+function showCelebration() {
+  document.getElementById('celebrationOverlay').classList.add('show');
+  launchConfetti();
+}
+
+function closeCelebration() {
+  document.getElementById('celebrationOverlay').classList.remove('show');
+  stopConfetti();
+}
+
+function launchConfetti() {
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.classList.add('show');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const ctx=canvas.getContext('2d');
+  const cols=['#58CC02','#1CB0F6','#FFC800','#FF4B4B','#CE82FF','#FF9500'];
+  let particles=Array.from({length:90},()=>({
+    x:Math.random()*canvas.width, y:-20-Math.random()*80,
+    vx:(Math.random()-.5)*3, vy:Math.random()*3+2,
+    col:cols[Math.floor(Math.random()*cols.length)],
+    w:Math.random()*8+4, h:Math.random()*5+3,
+    rot:Math.random()*360, rs:(Math.random()-.5)*8,
+  }));
+  function frame(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rs;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.col; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    particles=particles.filter(p=>p.y<canvas.height+30);
+    if(particles.length) rafId=requestAnimationFrame(frame);
+    else stopConfetti();
+  }
+  frame();
+}
+
+function stopConfetti() {
+  if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+  const c=document.getElementById('confetti-canvas');
+  c.classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════
+//  AI MODAL
+// ══════════════════════════════════════════════════════
+function openAIModal() {
+  const sel=document.getElementById('aiUnitSel');
+  if(sel.children.length<=1){
+    UNITS.forEach(u=>{
+      const o=document.createElement('option');
+      o.value=u.id; o.textContent=`Unit ${u.id}: ${u.name}`;
+      sel.appendChild(o);
+    });
+  }
+  document.getElementById('aiModal').classList.add('show');
+}
+
+function closeAIModal() {
+  document.getElementById('aiModal').classList.remove('show');
+}
+
+async function generateExercise() {
+  const key=localStorage.getItem('eh_apikey');
+  if(!key){ alert('Please save your Anthropic API key in Settings first.'); return; }
+  const uid=document.getElementById('aiUnitSel').value;
+  const type=document.getElementById('aiTypeSel').value;
+  const u=UNITS.find(u=>u.id==uid);
+  if(!u){ alert('Please select a unit.'); return; }
+  const res=document.getElementById('aiResult');
+  res.style.display='block'; res.textContent='✨ Generating…';
+  const typeDesc={vocabulary:'vocabulary from this unit',grammar:'grammar structures covered in this unit',fill:'fill-in-the-blank practice sentences',conversation:'conversation starters and discussion questions'}[type];
+  const prompt=`You are an English teacher for a B2+/C1 student named Franco (Argentine, 33, biochemist).
+Generate a short ${type} exercise (max 120 words) for Unit ${u.id}: "${u.name}" (${u.sub}).
+Focus on ${typeDesc}. Be practical and engaging.
+Include the answer or model response at the end, clearly labelled.`;
+  try {
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true',
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!r.ok){ const e=await r.json(); throw new Error(e.error?.message||'API error '+r.status); }
+    const d=await r.json();
+    res.textContent=d.content[0].text;
+  } catch(err){
+    res.textContent='❌ '+err.message+'\n\nCheck your API key in Settings and try again.';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  SETTINGS ACTIONS
+// ══════════════════════════════════════════════════════
+function saveApiKey() {
+  const v=document.getElementById('apiKeyInput').value.trim();
+  if(v && !v.startsWith('•')){
+    localStorage.setItem('eh_apikey',v);
+    document.getElementById('apiKeyInput').value='••••••••••••••••••';
+    alert('✅ API key saved!');
+  }
+}
+
+async function toggleNotif() {
+  if(!S.notifOn){
+    if(!('Notification' in window)){ alert('Notifications not supported on this browser.'); return; }
+    const p=await Notification.requestPermission();
+    if(p==='granted'){
+      S.notifOn=true; save();
+      document.getElementById('notifToggle').classList.add('on');
+      new Notification('EnglishHub C1 🎯',{body:"Daily reminders enabled! Keep your streak alive 🔥"});
+    } else { alert('Notification permission denied. Enable it in Safari Settings.'); }
+  } else {
+    S.notifOn=false; save();
+    document.getElementById('notifToggle').classList.remove('on');
+  }
+}
+
+function resetAll() {
+  if(confirm('Reset ALL progress, streak, XP, and custom units? This cannot be undone.')){
+    localStorage.removeItem('eh_state');
+    localStorage.removeItem('eh_apikey');
+    localStorage.removeItem('eh_custom_units');
+    localStorage.removeItem('eh_custom_questions');
+    location.reload();
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  ACHIEVEMENTS
+// ══════════════════════════════════════════════════════
+const ACHIEVEMENTS = [
+  {id:'first',    emoji:'🌱', name:'First Step',    desc:'Answer your first question',           check:s=>s.totalAnswered>=1},
+  {id:'streak3',  emoji:'🔥', name:'On Fire',        desc:'Reach a 3-day streak',                 check:s=>s.streak>=3},
+  {id:'streak7',  emoji:'💪', name:'Week Warrior',   desc:'Reach a 7-day streak',                 check:s=>s.streak>=7},
+  {id:'streak30', emoji:'🏆', name:'Month Master',   desc:'Reach a 30-day streak',                check:s=>s.streak>=30},
+  {id:'goal1',    emoji:'🎯', name:'Goal Getter',    desc:'Complete your first daily goal',       check:s=>Object.values(s.history||{}).some(n=>n>=10)},
+  {id:'goal7',    emoji:'🌙', name:'Week of Goals',  desc:'Complete daily goal 7 times',          check:s=>Object.values(s.history||{}).filter(n=>n>=10).length>=7},
+  {id:'c100',     emoji:'📚', name:'Hundred Club',   desc:'Answer 100 questions total',           check:s=>s.totalAnswered>=100},
+  {id:'c500',     emoji:'🎓', name:'Scholar',         desc:'Answer 500 questions total',           check:s=>s.totalAnswered>=500},
+  {id:'xp1000',   emoji:'⚡', name:'XP 1000',        desc:'Earn 1,000 XP',                        check:s=>s.xp>=1000},
+  {id:'correct50',emoji:'✅', name:'Sharp Mind',     desc:'Get 50 correct answers',               check:s=>s.totalCorrect>=50},
+  {id:'correct250',emoji:'🧠',name:'C1 Ready',       desc:'Get 250 correct answers',              check:s=>s.totalCorrect>=250},
+  {id:'expert',   emoji:'💎', name:'Unit Expert',    desc:'80%+ mastery on any unit (min 5 Qs)', check:s=>Object.values(s.unitProgress||{}).some(p=>p.t>=5&&p.c/p.t>=0.8)},
+  {id:'explorer', emoji:'🌍', name:'Explorer',       desc:'Answer in all 17 units',               check:s=>UNITS.every(u=>(s.unitProgress[u.id]||{}).t>0)},
+];
+
+function checkAchievements() {
+  if(!S.achievements) S.achievements=[];
+  ACHIEVEMENTS.forEach(a=>{
+    if(!S.achievements.includes(a.id) && a.check(S)){
+      S.achievements.push(a.id);
+      save();
+      showAchievementToast(a);
+    }
+  });
+}
+
+let toastTimer=null;
+function showAchievementToast(a) {
+  const toast=document.getElementById('achToast');
+  document.getElementById('achToastEmoji').textContent=a.emoji;
+  document.getElementById('achToastName').textContent=a.name;
+  toast.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'), 3500);
+}
+
+// ══════════════════════════════════════════════════════
+//  CALENDAR
+// ══════════════════════════════════════════════════════
+function renderCalendar() {
+  const lblEl=document.getElementById('calLabels');
+  const gridEl=document.getElementById('calGrid');
+  if(!lblEl||!gridEl) return;
+
+  lblEl.innerHTML=['Su','Mo','Tu','We','Th','Fr','Sa']
+    .map(d=>`<div class="cal-lbl">${d}</div>`).join('');
+
+  const td=today();
+  const now=new Date(td);
+  const cells=[];
+
+  // Last 35 days ending today
+  const start=new Date(now);
+  start.setDate(start.getDate()-34);
+
+  // Left-pad to Sunday
+  const pad=start.getDay(); // 0=Sun
+  for(let i=0;i<pad;i++) cells.push(null);
+
+  for(let i=0;i<35-pad;i++){
+    const d=new Date(start);
+    d.setDate(d.getDate()+i);
+    const ds=d.toISOString().split('T')[0];
+    cells.push({ds, count:S.history[ds]||0, isToday:ds===td});
+  }
+
+  gridEl.innerHTML=cells.map(c=>{
+    if(!c) return `<div class="cal-day empty"></div>`;
+    let cls='cal-day';
+    if(c.count>=10) cls+=' goal';
+    else if(c.count>0) cls+=' practiced';
+    if(c.isToday) cls+=' today';
+    return `<div class="${cls}" title="${c.ds}: ${c.count}q"></div>`;
+  }).join('');
+}
+
+function renderAchievements() {
+  const grid=document.getElementById('achGrid');
+  if(!grid) return;
+  if(!S.achievements) S.achievements=[];
+  const unlocked=S.achievements.length;
+  const countEl=document.getElementById('achCount');
+  if(countEl) countEl.textContent=`${unlocked}/${ACHIEVEMENTS.length}`;
+  grid.innerHTML=ACHIEVEMENTS.map(a=>{
+    const done=S.achievements.includes(a.id);
+    return `<div class="ach-badge ${done?'unlocked':'locked'}">
+      <div class="ach-emoji">${a.emoji}</div>
+      <div class="ach-name">${a.name}</div>
+      <div class="ach-desc">${a.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  CUSTOM UNITS (imported from Word)
+// ══════════════════════════════════════════════════════
+function loadCustomContent() {
+  try {
+    const cu = JSON.parse(localStorage.getItem('eh_custom_units')||'[]');
+    const cq = JSON.parse(localStorage.getItem('eh_custom_questions')||'[]');
+    cu.forEach(u => { if(!UNITS.find(x=>x.id===u.id)) UNITS.push(u); });
+    cq.forEach(q => { if(!Q.find(x=>x.id===q.id)) Q.push(q); });
+    cu.forEach(u => { if(!S.unitProgress[u.id]) S.unitProgress[u.id]={c:0,t:0}; });
+    cq.forEach(q => { if(S.weights[q.id]==null) S.weights[q.id]=1.0; });
+  } catch(e) {}
+}
+
+function saveCustomContent(unitObj, questions) {
+  const cu = JSON.parse(localStorage.getItem('eh_custom_units')||'[]');
+  const cq = JSON.parse(localStorage.getItem('eh_custom_questions')||'[]');
+  cu.push(unitObj);
+  cq.push(...questions);
+  localStorage.setItem('eh_custom_units', JSON.stringify(cu));
+  localStorage.setItem('eh_custom_questions', JSON.stringify(cq));
+  // Push to live arrays
+  UNITS.push(unitObj);
+  Q.push(...questions);
+  S.unitProgress[unitObj.id] = {c:0, t:0};
+  questions.forEach(q => { S.weights[q.id]=1.0; });
+  save();
+}
+
+function deleteCustomUnit(unitId) {
+  if(!confirm('Delete this unit and all its questions?')) return;
+  let cu = JSON.parse(localStorage.getItem('eh_custom_units')||'[]');
+  let cq = JSON.parse(localStorage.getItem('eh_custom_questions')||'[]');
+  cu = cu.filter(u=>u.id!==unitId);
+  cq = cq.filter(q=>q.u!==unitId);
+  localStorage.setItem('eh_custom_units', JSON.stringify(cu));
+  localStorage.setItem('eh_custom_questions', JSON.stringify(cq));
+  // Remove from live arrays
+  const ui = UNITS.findIndex(u=>u.id===unitId);
+  if(ui>-1) UNITS.splice(ui,1);
+  Q.forEach((q,i)=>{ if(q.u===unitId) Q.splice(i,1); });
+  delete S.unitProgress[unitId];
+  save();
+  renderSettings();
+}
+
+// ── Import Modal state ──
+let pendingUnit = null;
+let pendingQuestions = [];
+
+function openImportModal() {
+  resetImportModal();
+  document.getElementById('importModal').classList.add('show');
+}
+
+function closeImportModal() {
+  document.getElementById('importModal').classList.remove('show');
+  document.getElementById('wordFileInput').value='';
+}
+
+function resetImportModal() {
+  ['importStep1','importStep2','importStep3','importStep4'].forEach(id=>{
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById('importStep1').classList.add('active');
+  document.getElementById('importModalTitle').textContent='📄 Import New Unit';
+  document.getElementById('wordFileInput').value='';
+  pendingUnit=null; pendingQuestions=[];
+}
+
+function showImportStep(n) {
+  ['importStep1','importStep2','importStep3','importStep4'].forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('active', i===n-1);
+  });
+}
+
+async function handleWordFile(input) {
+  const file = input.files[0];
+  if(!file) return;
+  showImportStep(2);
+  document.getElementById('importStatusText').textContent='Reading file…';
+  try {
+    // Extract text with mammoth.js
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({arrayBuffer});
+    const text = result.value.trim();
+    if(!text || text.length < 50) throw new Error('The file appears to be empty or too short. Make sure it has class notes in it.');
+    document.getElementById('importStatusText').textContent='Analysing with AI…';
+    await generateUnitFromText(text, file.name);
+  } catch(err) {
+    document.getElementById('importErrorText').textContent = err.message;
+    showImportStep(4);
+  }
+}
+
+async function generateUnitFromText(text, filename) {
+  const key = localStorage.getItem('eh_apikey');
+  if(!key) throw new Error('No API key found. Please add your Anthropic API key in Settings first.');
+
+  const nextUnitId = Math.max(...UNITS.map(u=>u.id)) + 1;
+  const nextQId    = Math.max(...Q.map(q=>q.id)) + 1;
+  const colors = ['#58CC02','#1CB0F6','#CE82FF','#FFC800','#FF4B4B','#FF9500'];
+  const color = colors[nextUnitId % colors.length];
+
+  const prompt = `You are generating content for an English B2+/C1 learning app for Franco, an Argentine student studying with teacher Julieta Ayub.
+
+Based on the class notes below, generate a new unit for the app.
+
+STRICT RULES:
+- Generate exactly 8 questions: 3 MCQ, 3 fill-in-the-blank, 2 error correction
+- Unit id = ${nextUnitId}
+- Question ids = ${nextQId} to ${nextQId+7} (sequential)
+- For MCQ: "a" is the index (0-3) of the correct option in "o"
+- For fill: "a" = the answer word(s). Multiple accepted answers: separate with /
+- For error: "q" starts with "Find and correct the error:\\n\\"sentence\\"", "a" = the correction
+- "e" = clear explanation of why that answer is correct
+- Return ONLY valid JSON, no extra text
+
+JSON format:
+{
+  "unit": {"id":${nextUnitId},"name":"Short Name","sub":"Grammar/vocab topic","emoji":"🔤","color":"${color}","link":""},
+  "questions": [
+    {"id":${nextQId},"u":${nextUnitId},"t":"mcq","q":"Question?","o":["A","B","C","D"],"a":0,"e":"Explanation."},
+    {"id":${nextQId+1},"u":${nextUnitId},"t":"fill","q":"Sentence with ___.","a":"answer","e":"Explanation."},
+    {"id":${nextQId+2},"u":${nextUnitId},"t":"error","q":"Find and correct the error:\\n\\"Sentence with error.\\"","a":"correction","e":"Explanation."}
+  ]
+}
+
+CLASS NOTES (from file: ${filename}):
+${text.slice(0, 6000)}`;
+
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true',
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:2000,
+      messages:[{role:'user',content:prompt}]
+    })
+  });
+
+  if(!r.ok){ const e=await r.json(); throw new Error(e.error?.message||'API error '+r.status); }
+  const data = await r.json();
+  const raw = data.content[0].text.trim();
+
+  // Parse JSON — handle markdown code blocks if present
+  const jsonStr = raw.replace(/^```json\n?/,'').replace(/\n?```$/,'').trim();
+  let parsed;
+  try { parsed = JSON.parse(jsonStr); }
+  catch(e) { throw new Error('AI returned invalid JSON. Try again.'); }
+
+  if(!parsed.unit || !parsed.questions || !Array.isArray(parsed.questions))
+    throw new Error('AI response was missing unit or questions. Try again.');
+
+  pendingUnit = parsed.unit;
+  pendingQuestions = parsed.questions;
+  showPreview(parsed);
+}
+
+function showPreview(parsed) {
+  const u = parsed.unit;
+  const qs = parsed.questions;
+
+  document.getElementById('importModalTitle').textContent=`✨ Unit ${u.id} Preview`;
+  document.getElementById('previewUnitCard').innerHTML=`
+    <div class="preview-unit-header">
+      <span class="preview-unit-emoji">${u.emoji}</span>
+      <div>
+        <div class="preview-unit-name">Unit ${u.id}: ${u.name}</div>
+        <div class="preview-unit-sub">${u.sub}</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--muted);">${qs.length} questions generated</div>`;
+
+  const typeLabel = {mcq:'Multiple Choice',fill:'Fill in the Blank',error:'Error Correction'};
+  document.getElementById('previewQuestions').innerHTML = qs.map(q=>`
+    <div class="preview-q">
+      <div class="preview-q-type">${typeLabel[q.t]||q.t}</div>
+      ${q.q.replace(/\n/g,'<br>')}
+    </div>`).join('');
+
+  showImportStep(3);
+}
+
+function confirmImport() {
+  if(!pendingUnit || !pendingQuestions.length) return;
+  saveCustomContent(pendingUnit, pendingQuestions);
+  closeImportModal();
+  renderSettings();
+  renderHome();
+  // Show toast
+  showAchievementToast({emoji:'📚', name:`Unit ${pendingUnit.id} added!`});
+  pendingUnit=null; pendingQuestions=[];
+}
+
+function discardImport() {
+  pendingUnit=null; pendingQuestions=[];
+  resetImportModal();
+}
+
+// ══════════════════════════════════════════════════════
+//  SERVICE WORKER
+// ══════════════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+}
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+loadState();
+loadCustomContent();
+renderHome();
+</script>
+</body>
+</html>

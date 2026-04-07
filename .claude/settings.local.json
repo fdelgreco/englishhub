@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/Fran -name *Speaking* -o -name *Hub* -o -name *Franco* -o -name *archivo*)",
+      "Bash(python3 -m http.server 8080 --bind 0.0.0.0)",
+      "WebFetch(domain:www.cotodigital.com.ar)",
+      "Bash(npx playwright:*)",
+      "Bash(lsof -ti:8080,8081)",
+      "Bash(xargs ps:*)",
+      "Bash(npm install:*)",
+      "Bash(sudo npm:*)",
+      "Bash(firebase:*)",
+      "Bash(node seed.js)",
+      "Bash(node /tmp/test-lista.js)",
+      "Bash(node -e \"require\\(''''./coto.js''''\\)\")",
+      "Bash(node test-lista.js)",
+      "Bash(cd:*)",
+      "Bash(kill 57301)"
+    ]
+  }
+}
