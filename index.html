@@ -1358,10 +1358,48 @@ function mcqHTML(q){
 }
 
 function fillHTML(q){
-  return `<input id="fillIn" class="fill-input" type="text" placeholder="Type your answer…"
-    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-    onkeydown="if(event.key==='Enter')answerFill(${q.id})">
-  <button class="btn-primary" onclick="answerFill(${q.id})">Check Answer</button>`;
+  const correct = (q.a+'').split('/')[0].trim();
+  const correctWords = correct.split(/\s+/).length;
+  const correctLen = correct.length;
+
+  const others = Q.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a);
+  const seen = new Set([correct.toLowerCase()]);
+
+  function score(ans){
+    // Penaliza diferencia de palabras y de longitud — menos = más parecido
+    const wDiff = Math.abs(ans.split(/\s+/).length - correctWords);
+    const lDiff = Math.abs(ans.length - correctLen);
+    return wDiff * 10 + lDiff;
+  }
+
+  // Ordenar por similitud al correcto, luego mezclar un poco entre los mejores
+  const candidates = [];
+  for(const o of others){
+    const ans=(o.a+'').split('/')[0].trim();
+    if(!seen.has(ans.toLowerCase())){ seen.add(ans.toLowerCase()); candidates.push(ans); }
+  }
+  candidates.sort((a,b)=>score(a)-score(b));
+  // Tomar los 10 mejores y mezclarlos para no ser predecible
+  const pool = candidates.slice(0,10).sort(()=>Math.random()-0.5);
+  const distractors = pool.slice(0,3);
+
+  const opts=[...distractors];
+  const ci=Math.floor(Math.random()*4);
+  opts.splice(ci,0,correct);
+  return `<div class="options">${opts.map((opt,i)=>
+    `<button class="opt-btn" onclick="answerFillOpt(${q.id},${i},${ci})" data-i="${i}">
+      <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
+}
+
+function answerFillOpt(qId, sel, ci){
+  if(answered) return; answered=true;
+  const q=Q.find(q=>q.id===qId);
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
+    b.onclick=null;
+    if(i===ci) b.classList.add('correct');
+    else if(i===sel&&sel!==ci) b.classList.add('wrong');
+  });
+  processAnswer(q, sel===ci);
 }
 
 function errorHTML(q){
