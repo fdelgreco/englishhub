@@ -1357,31 +1357,40 @@ function mcqHTML(q){
       <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
 }
 
+function answerCategory(ans){
+  const a = ans.toLowerCase().trim();
+  const PREPS = new Set(['of','in','on','at','by','for','with','about','through','into','out','up','down','over','under','from','to','off','onto','upon','within','without','along','across','between','among','behind','beside','beyond','near','past','since','until','around','against','during','towards','round']);
+  if(PREPS.has(a)) return 'prep';
+  const CONJ = ['although','though','even though','whereas','while','whilst','however','nevertheless','nonetheless','despite','in spite of','yet','because','since','unless','provided','as long as','given that','considering','notwithstanding'];
+  if(CONJ.some(c=>a===c||a===c.split(' ').join(''))) return 'conj';
+  if(/^\d+$/.test(a) || ['one','two','three','four','five','six','seven','eight','nine','ten'].includes(a)) return 'num';
+  if(/tion$|ness$|ment$|ity$|ism$|ist$|ary$|ery$|ory$|age$|ure$|ance$|ence$|ship$|hood$|graph$|phy$|ian$|or$|er$/.test(a) && !a.includes(' ')) return 'noun';
+  if(/ly$|ful$|less$|ous$|ive$|al$|ic$|ent$|ant$|ed$/.test(a) && !a.includes(' ') && a.length > 4) return 'adj';
+  if(a.includes(' ')) return 'phrase_'+a.split(/\s+/).length;
+  return 'other';
+}
+
 function fillHTML(q){
   const correct = (q.a+'').split('/')[0].trim();
-  const correctWords = correct.split(/\s+/).length;
-  const correctLen = correct.length;
-
-  const others = Q.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a);
+  const cat = answerCategory(correct);
   const seen = new Set([correct.toLowerCase()]);
 
-  function score(ans){
-    // Penaliza diferencia de palabras y de longitud — menos = más parecido
-    const wDiff = Math.abs(ans.split(/\s+/).length - correctWords);
-    const lDiff = Math.abs(ans.length - correctLen);
-    return wDiff * 10 + lDiff;
-  }
+  const others = Q.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a);
+  const sameCategory=[], fallback=[];
 
-  // Ordenar por similitud al correcto, luego mezclar un poco entre los mejores
-  const candidates = [];
   for(const o of others){
     const ans=(o.a+'').split('/')[0].trim();
-    if(!seen.has(ans.toLowerCase())){ seen.add(ans.toLowerCase()); candidates.push(ans); }
+    if(seen.has(ans.toLowerCase())) continue;
+    seen.add(ans.toLowerCase());
+    if(answerCategory(ans)===cat) sameCategory.push(ans);
+    else fallback.push(ans);
   }
-  candidates.sort((a,b)=>score(a)-score(b));
-  // Tomar los 10 mejores y mezclarlos para no ser predecible
-  const pool = candidates.slice(0,10).sort(()=>Math.random()-0.5);
-  const distractors = pool.slice(0,3);
+
+  // Mezclar y tomar 3 del mismo tipo; si no alcanzan, completar con fallback
+  sameCategory.sort(()=>Math.random()-0.5);
+  fallback.sort(()=>Math.random()-0.5);
+  const pool=[...sameCategory,...fallback];
+  const distractors=pool.slice(0,3);
 
   const opts=[...distractors];
   const ci=Math.floor(Math.random()*4);
