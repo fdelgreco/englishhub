@@ -635,7 +635,7 @@
 
 <script>
 // ══════════════════════════════════════════════════════
-//  QUESTION BANK  —  124 questions across 17 units (IDs 157–280)
+//  QUESTION BANK  —  IDs 157–304 · MCQ + Fill (incl. preposition collocations)
 // ══════════════════════════════════════════════════════
 const Q = [
   // ── BATCH 2 — based on course PDF & personal notes ──────────────────────
@@ -663,8 +663,6 @@ const Q = [
   {id:164,u:2,t:'mcq',q:'"Resilience" in the context of health means…',
    o:['The ability to recover and adapt to challenges','Being physically very strong','Never getting sick','Avoiding stress completely'],
    a:0,e:'"Resilience" = ability to bounce back from difficulty. From class: "reinforce behaviours that build long-term resilience."'},
-  {id:165,u:2,t:'error',q:'Find and correct the error:\n"She exercises whether that\'s going to the gym and running every day."',
-   a:'or running',e:'"Whether that\'s" introduces alternatives — use "or" not "and" between the options. Correct: "whether that\'s going to the gym or running."'},
 
   // Unit 3 — Language & Punctuation
   {id:166,u:3,t:'mcq',q:'"Colourful language" refers to…',
@@ -675,8 +673,6 @@ const Q = [
   {id:168,u:3,t:'mcq',q:'A semicolon (;) connects two clauses that are…',
    o:['Closely related and could stand alone as sentences','Contradictory and opposite in meaning','One dependent on the other grammatically','Separated by a long pause'],
    a:0,e:'A semicolon joins two independent but closely related ideas. E.g. "I love coffee; I can\'t start my day without it."'},
-  {id:169,u:3,t:'error',q:'Find and correct the error:\n"She used a simile to describe her feelings — \'Life is a rollercoaster.\'"',
-   a:'metaphor',e:'"Life is a rollercoaster" is a METAPHOR (direct comparison without "like" or "as"). A simile would say "Life is LIKE a rollercoaster."'},
 
   // Unit 4 — Taboos & the Past
   {id:170,u:4,t:'mcq',q:'A taboo is best defined as…',
@@ -687,8 +683,6 @@ const Q = [
   {id:172,u:4,t:'mcq',q:'"Choose your battles" means…',
    o:['Only argue or fight about things that truly matter','Be aggressive in all situations','Avoid all conflict at any cost','Plan carefully before starting a war'],
    a:0,e:'"Choose your battles" = don\'t waste energy on every disagreement — save it for the things that really count. Noted in class Dec 3, 2025.'},
-  {id:173,u:4,t:'error',q:'Find and correct the error:\n"As a child, I would know all my neighbours by name."',
-   a:'used to know',e:'"Would" cannot be used with stative verbs (know, believe, love, own). Use "used to" instead: "I used to know all my neighbours."'},
   {id:174,u:4,t:'fill',q:'___ the laundry, doing the dishes, and hoovering are all examples of household ___.',
    a:'Doing / chores',e:'"Do the laundry" (not "make" or "wash"), and "chores" = regular domestic tasks. "Hoovering" (UK) = vacuuming.'},
 
@@ -701,8 +695,6 @@ const Q = [
   {id:177,u:5,t:'mcq',q:'Why is the passive voice used when the doer of the action is irrelevant?',
    o:['Because the result or action is more important than who did it','Because it is always more polite','Because active voice is grammatically incorrect','Because it sounds more conversational'],
    a:0,e:'Passive voice shifts focus away from the agent to the action or result. "The bridge was built in 1902" — who built it doesn\'t matter.'},
-  {id:178,u:5,t:'error',q:'Rewrite as a headline (use simple present, drop articles):\n"A new hospital has been opened by the government."',
-   a:'Government opens new hospital',e:'Headlines: drop articles ("a/the"), use simple present ("opens" not "has been opened"), and focus on the main action.'},
 
   // Unit 6 — Causative & Discourse Markers
   {id:179,u:6,t:'fill',q:'I ___ my car repaired at the garage last week. (causative — informal)',
@@ -712,8 +704,6 @@ const Q = [
    a:0,e:'"What is more" = furthermore / in addition. It adds a point that reinforces or strengthens the previous one.'},
   {id:181,u:6,t:'fill',q:'"Being a celebrity looks glamorous; ___ said that, it can be mentally exhausting."',
    a:'having',e:'"Having said that" = a discourse marker meaning "but considering that" — introduces a contrasting idea after making a point.'},
-  {id:182,u:6,t:'error',q:'Find and correct the error:\n"She had her nails do before the party."',
-   a:'done',e:'Causative structure: have + object + PAST PARTICIPLE. "She had her nails DONE" — not "do."'},
 
   // Unit 7 — Formal Writing
   {id:183,u:7,t:'mcq',q:'In the letter from class, "well-meaning adults" means adults who…',
@@ -724,8 +714,6 @@ const Q = [
   {id:185,u:7,t:'mcq',q:'In a formal letter, "I look forward to hearing from you" uses which form?',
    o:['Gerund (-ing form)','Infinitive (to + verb)','Past simple','Present perfect'],
    a:0,e:'"Look forward to" is always followed by a gerund (-ing). Common error: "I look forward to hear from you" — incorrect.'},
-  {id:186,u:7,t:'error',q:'Find and correct the error in this formal letter closing:\n"Dear Ms Johnson, ... Yours faithfully, Franco"',
-   a:'Yours sincerely',e:'Use "Yours faithfully" when you DON\'T know the name (Dear Sir/Madam). Use "Yours sincerely" when you DO know the name (Dear Ms Johnson).'},
 
   // Unit 8 — Goals & Habits
   {id:187,u:8,t:'fill',q:'Mark\'s goal was to stop ___ — but he never actually got started.',
@@ -735,8 +723,6 @@ const Q = [
    a:0,e:'SMART = Specific, Measurable, Achievable, Relevant, Time-bound. Goals must be realistic and within reach to be effective.'},
   {id:189,u:8,t:'fill',q:'She managed to pass her exam with flying ___.',
    a:'colours',e:'"Pass with flying colours" = succeed brilliantly. Noted in class Dec 29, 2025. Related idiom: "slow but steady wins the race."'},
-  {id:190,u:8,t:'error',q:'Find and correct the error:\n"It\'s high time you start setting more realistic goals."',
-   a:'started',e:'"It\'s high time + past simple." The verb after "it\'s high time" must be in the past simple, even though the meaning is present/future.'},
 
   // Unit 9 — Happiness & Hygge
   {id:191,u:9,t:'fill',q:'Hygge is a Danish concept about creating an ambience of cosiness, ___, and simple pleasure.',
@@ -753,8 +739,6 @@ const Q = [
    a:0,e:'From the lecture intro exercise: "Av. person – approx. 70 decisions/day!" Most are small and automatic, but they add up.'},
   {id:195,u:10,t:'fill',q:'Before speaking in public, my palms get ___ and I feel very nervous.',
    a:'sweaty',e:'"My palms get sweaty" = a physical sign of nerves. Other symptoms from class: mouth goes dry, butterflies in stomach, I get fidgety.'},
-  {id:196,u:10,t:'error',q:'Find and correct the error:\n"Before the presentation, I always get butterflies on my stomach."',
-   a:'in',e:'"Butterflies IN my stomach" — not "on." This fixed phrase describes the nervous fluttery feeling before a stressful event.'},
 
   // Unit 11 — Blue Zones
   {id:197,u:11,t:'fill',q:'Blue Zone diets are based on fruits, vegetables, ___, and whole grains — meat is eaten sparingly.',
@@ -762,8 +746,6 @@ const Q = [
   {id:198,u:11,t:'mcq',q:'In Blue Zones, "moderate" consumption means…',
    o:['In reasonable, limited amounts','In very large quantities','Only on special occasions','Never at all'],
    a:0,e:'"Moderate" = not too much and not too little. Blue Zones allow moderate alcohol (often wine), consumed daily but in small amounts.'},
-  {id:199,u:11,t:'error',q:'Find and correct the error:\n"Unlike to other regions, Blue Zones have much higher rates of centenarians."',
-   a:'Unlike',e:'"Unlike" is a preposition — it is NEVER followed by "to." Correct: "Unlike other regions…" Compare with "contrary to" which does take "to."'},
 
   // Unit 12 — Crime & Law
   {id:200,u:12,t:'mcq',q:'In a criminal trial, what is the "verdict"?',
@@ -774,8 +756,6 @@ const Q = [
   {id:202,u:12,t:'mcq',q:'What is "shoplifting"?',
    o:['Stealing goods from a shop','Robbing someone in the street','Hacking into a computer system','Damaging public property'],
    a:0,e:'"Shoplifting" = stealing items from a shop without paying. From the class article on Live Facial Recognition used to reduce shoplifting and robbery.'},
-  {id:203,u:12,t:'error',q:'Find and correct the error:\n"He was accused for stealing from his employer."',
-   a:'of',e:'"Accused OF" — the preposition is always "of." "Accused for" is a very common error. See also: convicted OF, guilty OF, suspected OF.'},
 
   // Unit 13 — Fashion & Environment
   {id:204,u:13,t:'mcq',q:'"To binge" on something means to…',
@@ -802,8 +782,6 @@ const Q = [
   {id:211,u:15,t:'mcq',q:'"Take the piss" (British slang) means to…',
    o:['Make fun of or mock someone/something','Be very serious about something','Leave a situation quickly','Ask for money'],
    a:0,e:'From class: "take the piss = to make a joke about sth/sb." It can be affectionate or offensive depending on context.'},
-  {id:212,u:15,t:'error',q:'Find and correct the error:\n"Her accent really hampers her from fitting in with the group."',
-   a:'hampers her ability to fit in / prevents her from fitting in',e:'"Hamper" means to hinder/obstruct — it doesn\'t take "from." Say "hampers her ability to fit in" or use "prevents her from fitting in."'},
 
   // Unit 16 — Travel
   {id:213,u:16,t:'fill',q:'We ___ a trip to Patagonia next summer — we\'re really excited.',
@@ -818,8 +796,6 @@ const Q = [
    a:0,e:'A package holiday bundles flights + hotel (and often meals/activities) into one price. Contrasts with independent/backpacker travel.'},
   {id:217,u:16,t:'fill',q:'Venice is ___ far the most romantic city I have ever visited.',
    a:'by',e:'"By far" = used to emphasise a superlative — "by far the most/best/worst." From class exercise on comparatives: "Rome is by far the most beautiful city."'},
-  {id:218,u:16,t:'error',q:'Find and correct the error:\n"Paris is nowhere near as crowded than Rome in August."',
-   a:'as',e:'"Nowhere near as... AS" — both positions need "as." "Nowhere near as crowded AS Rome." Don\'t mix up with comparatives that use "than."'},
 
   // Unit 17 — Anger & Complaints
   {id:219,u:17,t:'fill',q:'He always ___ about how much he earns — it\'s really off-putting.',
@@ -832,8 +808,6 @@ const Q = [
   {id:222,u:17,t:'mcq',q:'"Get over" something means to…',
    o:['Recover from or stop being upset about something','Make something worse','Avoid dealing with a problem','Share a problem with others'],
    a:0,e:'"Get over" = overcome, recover from. From class: "Get over = overcome." E.g. "It took her months to get over the breakup."'},
-  {id:223,u:17,t:'error',q:'Find and correct the error:\n"She needed to vent her emotions to, so she called her best friend."',
-   a:'vent her emotions',e:'"Vent your emotions" does not need "to" — it\'s not a phrasal verb here. Correct: "She needed to vent her emotions, so she called her best friend."'},
 
   // ── BATCH 3 — extended content ──────────────────────────────────────────
 
@@ -868,8 +842,6 @@ const Q = [
   {id:233,u:4,t:'mcq',q:'"I was going to call you" expresses…',
    o:['A past intention that did not happen','A future plan that is still possible','A repeated habit from the past','A regret about a past action'],
    a:0,e:'"Was going to + infinitive" = a past intention that didn\'t happen. E.g. "I was going to apologise, but I never got the chance."'},
-  {id:234,u:4,t:'error',q:'Find and correct the error:\n"My grandfather would know five languages fluently."',
-   a:'used to know',e:'"Would" cannot be used with stative verbs (know, like, believe, own, understand). You must use "used to": "My grandfather used to know five languages."'},
 
   // Unit 5 — Media & Headlines
   {id:235,u:5,t:'fill',q:'I like having the news in the ___ while I cook — it keeps me company.',
@@ -884,8 +856,6 @@ const Q = [
    a:0,e:'"Nevertheless" = despite what was just said, here is a contrasting point. "Furthermore," "what is more," and "in addition" all ADD information.'},
   {id:238,u:6,t:'fill',q:'She had her photo ___ professionally for her new passport.',
    a:'taken',e:'Causative: have + object + PAST PARTICIPLE. "Have your photo TAKEN" = someone else takes it for you. Common error: "have her photo take."'},
-  {id:239,u:6,t:'error',q:'Find and correct the error:\n"He had his car painting last week."',
-   a:'painted',e:'Causative = have + object + PAST PARTICIPLE. "Had his car PAINTED" — not "painting." The object receives the action; it never uses the -ing form here.'},
   {id:240,u:6,t:'mcq',q:'"On the other hand" is used to…',
    o:['Introduce a contrasting point of view','Add more evidence to support an argument','Summarise what was said before','Express a personal opinion'],
    a:0,e:'"On the other hand" signals the opposite or alternative perspective. Often paired with "on the one hand": "On the one hand... On the other hand..."'},
@@ -1009,6 +979,76 @@ const Q = [
    a:0,e:'"Get behind" = support, back, endorse. "I can\'t get behind it" = I can\'t support it. From class: "get behind." Opposite: "I\'m fully behind this project."'},
   {id:280,u:17,t:'fill',q:'Let\'s ___ up soon — I\'ve got so much to tell you about what\'s been going on.',
    a:'catch',e:'"Catch up" = spend time with someone to share news after not seeing them for a while. From class vocabulary Mar 25, 2026. Also: "catch up WITH someone."'},
+
+  // ── BATCH 4 — Preposition collocations (all units) ──────────────────────
+
+  // Unit 1
+  {id:281,u:1,t:'fill',q:'She devotes all her free time ___ her music — she barely does anything else.',
+   a:'to',e:'"Devote time/energy TO something." Always "to" — never "for" or "in." E.g. "He devoted his life to helping others."'},
+  {id:282,u:1,t:'fill',q:'He has a real knack ___ learning languages — he picks them up effortlessly.',
+   a:'for',e:'"Knack FOR something." Always "for." E.g. "She has a knack for making people feel welcome." Cannot say "knack of."'},
+  {id:283,u:1,t:'fill',q:'She\'s very good ___ making people feel comfortable in any social situation.',
+   a:'at',e:'"Good AT something/doing something." Used for skills and abilities. Contrast: "good FOR" = beneficial. "Good TO" = kind to someone.'},
+
+  // Unit 2
+  {id:284,u:2,t:'fill',q:'Regular exercise can result ___ a significantly longer and healthier life.',
+   a:'in',e:'"Result IN something" = cause something to happen. Don\'t confuse with "result FROM" (= come from/be caused by). E.g. "The accident resulted in three injuries."'},
+  {id:285,u:2,t:'fill',q:'A healthy diet, ___ combination with regular exercise, can add years to your life.',
+   a:'in',e:'"In combination WITH" = together with. The pattern here: "in combination in" is wrong. "In combination WITH exercise" = alongside exercise.'},
+
+  // Unit 4
+  {id:286,u:4,t:'fill',q:'She was born ___ wedlock — her parents were not married.',
+   a:'out of',e:'"Born out of wedlock" = born to unmarried parents. Fixed phrase. "Out of" acts as a compound preposition here.'},
+  {id:287,u:4,t:'fill',q:'He was convicted ___ fraud and sentenced to four years in prison.',
+   a:'of',e:'"Convicted OF a crime." Always "of." See also: accused OF, guilty OF, suspected OF. Different: charged WITH, arrested FOR.'},
+  {id:288,u:4,t:'fill',q:'The officer arrested him ___ possession of stolen goods.',
+   a:'for',e:'"Arrested FOR a crime." Always "for." Compare: convicted OF (already found guilty), charged WITH (formally accused), arrested FOR (taken into custody).'},
+  {id:289,u:4,t:'fill',q:'After the trial, she was charged ___ three counts of theft.',
+   a:'with',e:'"Charged WITH a crime." Always "with." The four key crime prepositions: arrested FOR, charged WITH, convicted OF, sentenced TO.'},
+
+  // Unit 7
+  {id:290,u:7,t:'fill',q:'I look forward ___ hearing from you at your earliest convenience. (formal letter closing)',
+   a:'to',e:'"Look forward TO + -ing." This "to" is a preposition, NOT part of an infinitive — so it must be followed by the gerund (-ing). Common error: "look forward to hear."'},
+  {id:291,u:7,t:'fill',q:'She was grateful ___ all the support she received during that difficult time.',
+   a:'for',e:'"Grateful FOR something." Always "for" when referring to what you are thankful about. "Grateful TO someone" = when referring to the person you thank.'},
+
+  // Unit 8
+  {id:292,u:8,t:'fill',q:'I set ___ to make a real change this year, but somehow ended up doing the same things.',
+   a:'out',e:'"Set out to do something" = begin with a clear intention or goal. From class notes Unit 8. E.g. "She set out to climb the mountain but turned back at 3,000m."'},
+  {id:293,u:8,t:'fill',q:'When problems crop ___ unexpectedly, it\'s important to stay calm.',
+   a:'up',e:'"Crop up" = appear suddenly and unexpectedly. "Up" is the particle, making it a phrasal verb. Cannot say "crop in" or "crop out."'},
+
+  // Unit 9
+  {id:294,u:9,t:'fill',q:'She seemed perfectly content ___ her quiet life — she didn\'t need excitement.',
+   a:'with',e:'"Content WITH something." Always "with." E.g. "Are you content with your progress?" Compare: "satisfied with," "happy with," "pleased with" — all use "with."'},
+
+  // Unit 11
+  {id:295,u:11,t:'fill',q:'Blue Zones are typical ___ places where people maintain strong social bonds throughout their lives.',
+   a:'of',e:'"Typical OF a place/group." Always "of." E.g. "This kind of weather is typical of the region in winter."'},
+  {id:296,u:11,t:'fill',q:'Unlike other regions, Blue Zones are not dependent ___ processed or fast food.',
+   a:'on',e:'"Dependent ON something." Always "on." E.g. "She\'s too dependent on her phone." Also: "rely ON," "depend ON."'},
+
+  // Unit 12
+  {id:297,u:12,t:'fill',q:'He was sentenced ___ three years in prison for his role in the robbery.',
+   a:'to',e:'"Sentenced TO prison/a fine/community service." Always "to." E.g. "She was sentenced to 200 hours of community service."'},
+  {id:298,u:12,t:'fill',q:'The driver was fined ___ speeding in a school zone.',
+   a:'for',e:'"Fined FOR doing something." Always "for" — it indicates the reason for the punishment. E.g. "He was fined £200 for parking illegally."'},
+
+  // Unit 16
+  {id:299,u:16,t:'fill',q:'I have a real soft spot ___ small coastal towns — something about them feels magical.',
+   a:'for',e:'"Soft spot FOR something/someone" = a special feeling of fondness. Always "for." E.g. "He\'s always had a soft spot for stray animals."'},
+  {id:300,u:16,t:'fill',q:'She arrived ___ the airport three hours early — she hates being rushed.',
+   a:'at',e:'"Arrive AT a specific location" (airport, station, hotel, school). "Arrive IN a city/country." Don\'t say "arrive to" — common error among Spanish speakers.'},
+  {id:301,u:16,t:'fill',q:'Paris is by far the most romantic city I\'ve ever been ___.',
+   a:'to',e:'"Been TO a place" = visited. "I\'ve been TO Paris" = I have visited Paris. Compare: "I\'ve been IN Paris" = I spent time there (focus on duration, not the journey).'},
+
+  // Unit 17
+  {id:302,u:17,t:'fill',q:'He always brags ___ how much money he earns — it\'s very off-putting.',
+   a:'about',e:'"Brag ABOUT something." Always "about." Similar pattern: "talk about," "complain about," "worry about," "boast about."'},
+  {id:303,u:17,t:'fill',q:'It took her months to get ___ the disappointment of not getting the job.',
+   a:'over',e:'"Get OVER something" = recover from, stop being upset about. Always "over." E.g. "I can\'t get over how rude he was."'},
+  {id:304,u:17,t:'fill',q:'She needed someone to vent ___ — to talk honestly about how frustrated she was feeling.',
+   a:'to',e:'"Vent TO someone" = express strong feelings to a person. If no recipient: just "vent" (no preposition). From class notes: "She needed to vent, so she called her friend."'},
 ];
 
 // ══════════════════════════════════════════════════════
@@ -1249,9 +1289,9 @@ function renderQ() {
   answered=false;
   document.getElementById('quizContent').innerHTML=`
     <div class="quiz-unit-tag">Unit ${q.u}: ${u.name}</div>
-    <div class="quiz-type-badge">${q.t==='mcq'?'Multiple Choice':q.t==='error'?'Error Correction':'Fill in the Blank'}</div>
+    <div class="quiz-type-badge">${q.t==='mcq'?'Multiple Choice':'Fill in the Blank'}</div>
     <div class="quiz-q" style="white-space:pre-line">${q.q}</div>
-    ${q.t==='mcq'?mcqHTML(q):q.t==='error'?errorHTML(q):fillHTML(q)}`;
+    ${q.t==='mcq'?mcqHTML(q):fillHTML(q)}`;
 }
 
 function mcqHTML(q){
@@ -1314,15 +1354,6 @@ function answerFillOpt(qId, sel, ci){
   processAnswer(q, sel===ci);
 }
 
-function errorHTML(q){
-  return `<div style="background:rgba(255,75,75,.08);border:1px solid var(--red);border-radius:12px;padding:14px;margin-bottom:14px;font-size:14px;color:var(--muted);line-height:1.6;">
-    ✏️ <em>Find the error and write the corrected word or phrase.</em>
-  </div>
-  <input id="fillIn" class="fill-input" type="text" placeholder="Type the correction…"
-    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-    onkeydown="if(event.key==='Enter')answerFill(${q.id})">
-  <button class="btn-primary" onclick="answerFill(${q.id})">Check</button>`;
-}
 
 function answerMCQ(qId, sel) {
   if(answered) return; answered=true;
@@ -1833,7 +1864,7 @@ function showPreview(parsed) {
     </div>
     <div style="font-size:13px;color:var(--muted);">${qs.length} questions generated</div>`;
 
-  const typeLabel = {mcq:'Multiple Choice',fill:'Fill in the Blank',error:'Error Correction'};
+  const typeLabel = {mcq:'Multiple Choice',fill:'Fill in the Blank'};
   document.getElementById('previewQuestions').innerHTML = qs.map(q=>`
     <div class="preview-q">
       <div class="preview-q-type">${typeLabel[q.t]||q.t}</div>
