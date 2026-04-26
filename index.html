@@ -379,27 +379,21 @@
     .gp-unit-info { flex: 1; }
     .gp-unit-name { font-size: 14px; font-weight: 700; }
     .gp-unit-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .gp-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-    .gp-btn {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
-      padding: 9px 11px; cursor: pointer; display: flex; justify-content: space-between;
-      align-items: center; transition: border-color .15s;
+    .gp-card-tap { cursor: pointer; transition: border-color .15s, background .15s; }
+    .gp-card-tap:active { background: #253540; border-color: var(--muted); }
+    .gp-total-count {
+      font-size: 13px; font-weight: 700; background: var(--border);
+      border-radius: 20px; padding: 3px 10px; color: var(--muted); flex-shrink: 0;
     }
-    .gp-btn:active { background: var(--border); }
-    .gp-btn-label { font-size: 12px; font-weight: 600; color: #c8d8e0; }
-    .gp-btn-count {
-      font-size: 11px; font-weight: 700; background: var(--border);
-      border-radius: 20px; padding: 1px 7px; color: var(--muted);
+    .gp-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .gp-badge {
+      font-size: 11px; font-weight: 600; border-radius: 20px;
+      padding: 3px 9px; border: 1px solid;
     }
-    .gp-btn.prep    { border-color: rgba(28,176,246,.4); }
-    .gp-btn.prep    .gp-btn-label { color: var(--blue); }
-    .gp-btn.phrasal { border-color: rgba(206,130,255,.4); }
-    .gp-btn.phrasal .gp-btn-label { color: var(--purple); }
-    .gp-btn.pattern { border-color: rgba(255,200,0,.4); }
-    .gp-btn.pattern .gp-btn-label { color: var(--yellow); }
-    .gp-btn.colloc  { border-color: rgba(88,204,2,.4); }
-    .gp-btn.colloc  .gp-btn-label { color: var(--green); }
-    .gp-btn:disabled { opacity: .4; cursor: default; }
+    .gp-badge.prep    { color: var(--blue);   border-color: rgba(28,176,246,.4);  background: rgba(28,176,246,.08); }
+    .gp-badge.phrasal { color: var(--purple); border-color: rgba(206,130,255,.4); background: rgba(206,130,255,.08); }
+    .gp-badge.pattern { color: var(--yellow); border-color: rgba(255,200,0,.4);   background: rgba(255,200,0,.08); }
+    .gp-badge.colloc  { color: var(--green);  border-color: rgba(88,204,2,.4);    background: rgba(88,204,2,.08); }
 
     /* GP end screen (reuses quiz view) */
     .gp-end { padding: 32px 20px; text-align: center; }
@@ -1825,31 +1819,31 @@ const CAT_META = {
 function renderGrammar() {
   const el = document.getElementById('gpUnitList');
   el.innerHTML = UNITS.map(u => {
-    const cats = Object.entries(CAT_META).map(([cat, meta]) => {
+    const total = GP.filter(g => g.u === u.id).length;
+    if (!total) return '';
+    const badges = Object.entries(CAT_META).map(([cat, meta]) => {
       const count = GP.filter(g => g.u === u.id && g.cat === cat).length;
-      const disabled = count === 0 ? 'disabled' : '';
-      return `<button class="gp-btn ${meta.cls}" onclick="startGPDrill(${u.id},'${cat}')" ${disabled}>
-        <span class="gp-btn-label">${meta.icon} ${meta.label}</span>
-        <span class="gp-btn-count">${count}</span>
-      </button>`;
+      if (!count) return '';
+      return `<span class="gp-badge ${meta.cls}">${meta.icon} ${meta.label} · ${count}</span>`;
     }).join('');
-    return `<div class="gp-card">
+    return `<div class="gp-card gp-card-tap" onclick="startGPDrill(${u.id})">
       <div class="gp-unit-hdr">
         <div class="gp-unit-emoji" style="background:${u.color}22">${u.emoji}</div>
         <div class="gp-unit-info">
           <div class="gp-unit-name">Unit ${u.id}: ${u.name}</div>
           <div class="gp-unit-sub">${u.sub}</div>
         </div>
+        <div class="gp-total-count">${total}</div>
       </div>
-      <div class="gp-cats">${cats}</div>
+      <div class="gp-badges">${badges}</div>
     </div>`;
-  }).join('');
+  }).filter(Boolean).join('');
 }
 
 let gpMode = false, gpScore = 0;
 
-function startGPDrill(unitId, cat) {
-  const pool = GP.filter(g => g.u === unitId && g.cat === cat);
+function startGPDrill(unitId) {
+  const pool = GP.filter(g => g.u === unitId);
   if (!pool.length) return;
   // Shuffle and take up to 10
   const shuffled = pool.slice().sort(() => Math.random() - 0.5);
@@ -2095,10 +2089,7 @@ function showGPResults() {
 }
 
 function retryGPDrill() {
-  // Re-shuffle the same unit+cat
-  const cat = session[0].cat;
-  const uid = session[0].u;
-  startGPDrill(uid, cat);
+  startGPDrill(session[0].u);
 }
 
 // ══════════════════════════════════════════════════════
