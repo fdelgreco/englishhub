@@ -545,6 +545,14 @@
       <div id="customUnitsList"></div>
     </div>
 
+    <div class="section-head">App</div>
+    <div class="settings-block">
+      <div class="settings-row" style="cursor:pointer;" onclick="forceUpdate()">
+        <div class="settings-lbl">Check for updates</div>
+        <span style="color:var(--muted);">›</span>
+      </div>
+    </div>
+
     <div class="section-head">Data</div>
     <div class="settings-block">
       <div class="settings-row" style="cursor:pointer;" onclick="resetAll()">
@@ -2221,6 +2229,17 @@ async function toggleNotif() {
   } else {
     S.notifOn=false; save();
     document.getElementById('notifToggle').classList.remove('on');
+  }
+}
+
+function forceUpdate() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg) reg.update().then(() => window.location.reload(true));
+      else window.location.reload(true);
+    });
+  } else {
+    window.location.reload(true);
   }
 }
 
