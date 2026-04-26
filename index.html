@@ -362,6 +362,51 @@
     .ach-toast-emoji { font-size: 28px; flex-shrink: 0; }
     .ach-toast-label { font-size: 10px; color: var(--yellow); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
     .ach-toast-name { font-size: 15px; font-weight: 700; }
+
+    /* ── GRAMMAR FOCUS VIEW ── */
+    .gp-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; margin-bottom: 12px;
+    }
+    .gp-unit-hdr {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    }
+    .gp-unit-emoji {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .gp-unit-info { flex: 1; }
+    .gp-unit-name { font-size: 14px; font-weight: 700; }
+    .gp-unit-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .gp-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .gp-btn {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 11px; cursor: pointer; display: flex; justify-content: space-between;
+      align-items: center; transition: border-color .15s;
+    }
+    .gp-btn:active { background: var(--border); }
+    .gp-btn-label { font-size: 12px; font-weight: 600; color: #c8d8e0; }
+    .gp-btn-count {
+      font-size: 11px; font-weight: 700; background: var(--border);
+      border-radius: 20px; padding: 1px 7px; color: var(--muted);
+    }
+    .gp-btn.prep    { border-color: rgba(28,176,246,.4); }
+    .gp-btn.prep    .gp-btn-label { color: var(--blue); }
+    .gp-btn.phrasal { border-color: rgba(206,130,255,.4); }
+    .gp-btn.phrasal .gp-btn-label { color: var(--purple); }
+    .gp-btn.pattern { border-color: rgba(255,200,0,.4); }
+    .gp-btn.pattern .gp-btn-label { color: var(--yellow); }
+    .gp-btn.colloc  { border-color: rgba(88,204,2,.4); }
+    .gp-btn.colloc  .gp-btn-label { color: var(--green); }
+    .gp-btn:disabled { opacity: .4; cursor: default; }
+
+    /* GP end screen (reuses quiz view) */
+    .gp-end { padding: 32px 20px; text-align: center; }
+    .gp-end-score { font-size: 52px; font-weight: 900; color: var(--green); }
+    .gp-end-label { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+    .gp-end-msg { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .gp-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -521,6 +566,14 @@
     </div>
   </div>
 
+  <!-- ══ GRAMMAR VIEW ══ -->
+  <div id="view-grammar" class="view">
+    <div class="view-title">Grammar Focus</div>
+    <p style="font-size:13px;color:var(--muted);margin:-10px 0 18px">Drill prepositions, phrasal verbs, patterns & collocations by unit.</p>
+    <div id="gpUnitList"></div>
+    <div style="height:8px"></div>
+  </div>
+
 </div><!-- /#app -->
 
 <!-- ══ BOTTOM NAV ══ -->
@@ -533,6 +586,9 @@
   </button>
   <button class="bnav-btn" id="nav-progress" onclick="showView('progress')">
     <span class="bnav-icon">📊</span><span>Progress</span>
+  </button>
+  <button class="bnav-btn" id="nav-grammar" onclick="showView('grammar')">
+    <span class="bnav-icon">✏️</span><span>Grammar</span>
   </button>
   <button class="bnav-btn" id="nav-settings" onclick="showView('settings')">
     <span class="bnav-icon">⚙️</span><span>Settings</span>
@@ -1052,6 +1108,440 @@ const Q = [
 ];
 
 // ══════════════════════════════════════════════════════
+//  GRAMMAR PRACTICE BANK  — cat: prep | phrasal | pattern | colloc
+// ══════════════════════════════════════════════════════
+const GP = [
+  // ═══ UNIT 1 — Introducing Yourself ═══
+  {id:1001,u:1,cat:'prep',t:'fill',q:'She devotes all her free time ___ her passion for music.',
+   a:'to',e:'"Devote something TO something." Always "to." Cannot say "devote for" or "devote in."'},
+  {id:1002,u:1,cat:'prep',t:'fill',q:'He has a real knack ___ picking up new languages effortlessly.',
+   a:'for',e:'"Have a knack FOR something/doing something." Always "for."'},
+  {id:1003,u:1,cat:'prep',t:'fill',q:'She\'s very good ___ making people feel at ease in any situation.',
+   a:'at',e:'"Good AT something/doing something." For skills: "at." Don\'t confuse with "good FOR" (beneficial) or "good TO" (kind to).'},
+  {id:1004,u:1,cat:'prep',t:'fill',q:'He\'s been interested ___ genetics since he was a teenager.',
+   a:'in',e:'"Interested IN something." Always "in." E.g. "Are you interested in science?"'},
+  {id:1005,u:1,cat:'phrasal',t:'fill',q:'"It\'s hard to keep ___ ___ all the news — there\'s so much happening." (stay informed)',
+   a:'up with',e:'"Keep up WITH something" = manage to stay at the same level or pace as something that keeps happening.'},
+  {id:1006,u:1,cat:'phrasal',t:'mcq',q:'"She comes across as very confident" means…',
+   o:['She gives the impression of being very confident','She is moving confidently across the room','She used to be confident','She made someone feel confident'],
+   a:0,e:'"Come across as" = give a certain impression or appear a certain way to others. E.g. "He comes across as arrogant but is actually very shy."'},
+  {id:1007,u:1,cat:'phrasal',t:'fill',q:'As a child, he always looked ___ ___ his older brother — he wanted to be just like him.',
+   a:'up to',e:'"Look up TO someone" = admire and respect someone, especially someone older or more senior.'},
+  {id:1008,u:1,cat:'pattern',t:'mcq',q:'"Whether that\'s going to the gym or cooking, exercise should be enjoyable." What does "whether that\'s" do?',
+   o:['Introduces examples of a general idea','Asks a direct question','Expresses uncertainty','Introduces a condition'],
+   a:0,e:'"Whether that\'s X or Y" = used to give examples of what you mean. Introduces alternatives that illustrate a broader statement. Equivalent to "be it X or Y."'},
+  {id:1009,u:1,cat:'pattern',t:'mcq',q:'Which is the correct form?',
+   o:['"He was born and bred in London."','"He was born and bread in London."','"He was born and breed in London."','"He was borned and bred in London."'],
+   a:0,e:'"Born and bred" (not "bread"!) = grew up and spent your whole life in a place. "Bred" is the past participle of "breed."'},
+  {id:1010,u:1,cat:'colloc',t:'fill',q:'Non-profit organisations campaign to ___ awareness ___ social issues.',
+   a:'raise / about',e:'"Raise awareness ABOUT/OF an issue" = make people more informed and conscious of it.'},
+  {id:1011,u:1,cat:'colloc',t:'mcq',q:'"I don\'t want to be a burden on my family" means…',
+   o:['I don\'t want to cause them extra worry or responsibility','I don\'t want to be financially dependent','I want to live alone','I want to be independent at work'],
+   a:0,e:'"A burden" = a heavy responsibility or source of worry. "Being a burden" = causing problems for someone who cares for you.'},
+  {id:1012,u:1,cat:'colloc',t:'mcq',q:'Someone described as "well-built" has…',
+   o:['A strong, muscular body','A very tall frame','A slim physique','An average build'],
+   a:0,e:'"Well-built" = having a strong, muscular body. Synonym: "muscular physique." Both were used in the Unit 1 course material on describing people.'},
+
+  // ═══ UNIT 2 — Living Longer ═══
+  {id:1013,u:2,cat:'prep',t:'fill',q:'Regular exercise can result ___ a significantly longer and healthier life.',
+   a:'in',e:'"Result IN something" = cause something to happen. "Result FROM something" = be caused by something. Exercise causes the long life → "result in."'},
+  {id:1014,u:2,cat:'prep',t:'fill',q:'His poor health resulted ___ years of bad diet and no exercise.',
+   a:'from',e:'"Result FROM something" = be caused by. The poor health was the result; the bad diet was the cause.'},
+  {id:1015,u:2,cat:'prep',t:'fill',q:'Everyone stands to benefit ___ regular physical activity, regardless of age.',
+   a:'from',e:'"Benefit FROM something" = gain advantage from. Always "from." E.g. "She benefited enormously from the training."'},
+  {id:1016,u:2,cat:'prep',t:'fill',q:'A moderate amount of coffee is actually good ___ your health, research suggests.',
+   a:'for',e:'"Good FOR someone/something" = beneficial. Don\'t confuse with "good AT" (skilled) or "good TO" (kind towards someone).'},
+  {id:1017,u:2,cat:'phrasal',t:'mcq',q:'"Buck the trend" means to…',
+   o:['Go against the general direction or norm','Follow the most popular approach','Start a brand new trend','End an existing trend'],
+   a:0,e:'"Buck the trend" = do the opposite of what most people are doing. E.g. "While others lost sales, they bucked the trend and grew."'},
+  {id:1018,u:2,cat:'phrasal',t:'fill',q:'Scientists struggle to keep ___ ___ all the new research being published every day.',
+   a:'up with',e:'"Keep up with" = maintain the same pace as something that keeps happening. Here: stay informed about rapidly growing literature.'},
+  {id:1019,u:2,cat:'pattern',t:'mcq',q:'"His fitness improved by leaps and bounds." What does this mean?',
+   o:['It improved very rapidly and dramatically','It improved slowly but steadily','It improved in small, careful steps','It improved inconsistently'],
+   a:0,e:'"By leaps and bounds" = very rapidly and dramatically. Used to describe impressive progress. E.g. "Her English has improved by leaps and bounds."'},
+  {id:1020,u:2,cat:'pattern',t:'mcq',q:'Which sentence uses "whether that\'s" correctly?',
+   o:['"There are many ways to stay active, whether that\'s walking, swimming, or cycling."','"I\'m not sure whether that\'s correct."','"Whether that\'s she comes or not doesn\'t matter."','"He did it whether that\'s possible."'],
+   a:0,e:'"Whether that\'s X or Y" introduces examples. It works when you can replace it with "be it X or Y." It doesn\'t function like the conjunction "whether" in questions.'},
+  {id:1021,u:2,cat:'colloc',t:'mcq',q:'Complete: "She was ___ awake at 3 a.m., unable to sleep at all."',
+   o:['wide','fully','deeply','heavily'],
+   a:0,e:'"Wide awake" = completely, fully awake. Fixed collocation. You can\'t substitute "fully awake" in the same idiomatic way. Pair: "wide awake" / "fast asleep."'},
+  {id:1022,u:2,cat:'colloc',t:'mcq',q:'Complete: "By the time the film finished, the children were ___ asleep."',
+   o:['fast','deeply','soundly','heavily'],
+   a:0,e:'"Fast asleep" = in a deep sleep. Fixed collocation — "fast" here means "firmly/deeply" (an archaic use). Pair: "wide awake" / "fast asleep."'},
+
+  // ═══ UNIT 3 — Words & Language ═══
+  {id:1023,u:3,cat:'prep',t:'fill',q:'"The ball is ___ your court now — it\'s time for you to decide."',
+   a:'in',e:'"The ball is IN your court" = it\'s your turn to act. A fixed idiom — always "in."'},
+  {id:1024,u:3,cat:'prep',t:'fill',q:'She is fluent ___ four languages and conversational in two more.',
+   a:'in',e:'"Fluent IN a language." Always "in." E.g. "She\'s fluent in French and Spanish."'},
+  {id:1025,u:3,cat:'phrasal',t:'mcq',q:'"The ball is in your court" means…',
+   o:['It\'s your turn to take action or decide','You are correct about something','You need to pass something to another person','Someone is playing a sport'],
+   a:0,e:'A tennis metaphor. When the ball is in YOUR court, you must play the next shot. Idiomatically: it\'s your responsibility to act next.'},
+  {id:1026,u:3,cat:'phrasal',t:'mcq',q:'"I bruise like a peach" uses which literary device?',
+   o:['Simile (comparison using "like" or "as")','Metaphor (direct comparison)','Personification','Hyperbole'],
+   a:0,e:'"Like a peach" uses "like" → simile. A metaphor would say "I am a peach." Peaches bruise very easily, so this means "I get bruises very easily."'},
+  {id:1027,u:3,cat:'pattern',t:'mcq',q:'A semicolon (;) is used to…',
+   o:['Join two closely related independent clauses','End a sentence completely','Introduce a list after a noun','Show possession'],
+   a:0,e:'Semicolons join two independent but related ideas. E.g. "I was tired; I went to bed." Both sides could stand alone as sentences.'},
+  {id:1028,u:3,cat:'pattern',t:'mcq',q:'"Life is a rollercoaster" is an example of a…',
+   o:['Metaphor','Simile','Idiom','Proverb'],
+   a:0,e:'Metaphor = direct comparison (no "like" or "as"). Simile = "Life is LIKE a rollercoaster." Metaphor says one thing IS another.'},
+  {id:1029,u:3,cat:'colloc',t:'mcq',q:'"Colourful language" is a polite way of referring to…',
+   o:['Swearing or using very strong language','Descriptive and poetic writing','Using many adjectives','Technical vocabulary'],
+   a:0,e:'"Colourful language" is a euphemism for profanity or strong/offensive words. From class notes Dec 1, 2025.'},
+  {id:1030,u:3,cat:'colloc',t:'fill',q:'The word "sinister" originally comes from the Latin word for ___ — left-handedness was seen as unlucky.',
+   a:'left',e:'In Latin, "sinister" meant "left." Over time it acquired negative connotations, giving us the modern meaning of "threatening or ominous."'},
+
+  // ═══ UNIT 4 — Customs & the Past ═══
+  {id:1031,u:4,cat:'prep',t:'fill',q:'She was convicted ___ three counts of fraud after a lengthy trial.',
+   a:'of',e:'"Convicted OF a crime." Fixed preposition. Also: accused OF, guilty OF, suspected OF. Different: charged WITH, arrested FOR, sentenced TO.'},
+  {id:1032,u:4,cat:'prep',t:'fill',q:'The suspect was formally charged ___ theft and criminal damage.',
+   a:'with',e:'"Charged WITH a crime." Always "with." This is when police/prosecutors officially accuse you of a specific offence.'},
+  {id:1033,u:4,cat:'prep',t:'fill',q:'Having a child ___ ___ wedlock was considered deeply shameful in many cultures.',
+   a:'out of',e:'"Out of wedlock" = born to parents who are not married. "Wedlock" = the state of being married (formal/old English).'},
+  {id:1034,u:4,cat:'phrasal',t:'mcq',q:'"Going Dutch" at a restaurant means…',
+   o:['Each person pays for their own share','One person generously pays for everyone','Going to a Dutch restaurant','Taking turns paying on different occasions'],
+   a:0,e:'"Going Dutch" = splitting the bill equally so each person pays their own share. Commonly used in British and American English.'},
+  {id:1035,u:4,cat:'phrasal',t:'mcq',q:'"Choose your battles" means…',
+   o:['Only argue about things that truly matter to you','Be aggressive in every situation','Avoid all conflict','Plan carefully before every argument'],
+   a:0,e:'If you "choose your battles," you decide which disagreements are worth pursuing — and let the minor ones go. From class: "choose the battles you want to fight."'},
+  {id:1036,u:4,cat:'pattern',t:'mcq',q:'Which sentence correctly uses "used to" vs "would"?',
+   o:['"I used to know five languages, and I would practise them every day."','"I would know five languages when I was young."','"She used to went to school here."','"He would live in Paris before moving to Berlin."'],
+   a:0,e:'"Used to" is for states AND habits. "Would" is ONLY for repeated past actions (habits) — NOT states. "Know/live/have/own" are stative verbs → must use "used to."'},
+  {id:1037,u:4,cat:'pattern',t:'mcq',q:'"She was always borrowing my things without asking." This expresses…',
+   o:['An annoying or irritating past habit','A single past event','A past state no longer true','A past intention that didn\'t happen'],
+   a:0,e:'"Was/were always + -ing" = an annoying past habit. It implies the speaker found it irritating. Compare: "would" (neutral repetition), "used to" (neutral habit or state).'},
+  {id:1038,u:4,cat:'pattern',t:'mcq',q:'"I was going to call you but I forgot." This expresses…',
+   o:['A past intention that didn\'t happen','A past habit','A regret about a past action','A conditional statement'],
+   a:0,e:'"Was/were going to + infinitive" = intended to do something but didn\'t. It shows an unfulfilled past plan.'},
+  {id:1039,u:4,cat:'colloc',t:'mcq',q:'"That job is no picnic" means…',
+   o:['The job is difficult and unpleasant','The job is very easy','The job involves outdoor work','The job is unpaid'],
+   a:0,e:'"No picnic" = not easy; actually difficult or unpleasant. A picnic is associated with ease and pleasure, so "no picnic" = the opposite.'},
+  {id:1040,u:4,cat:'colloc',t:'mcq',q:'Which is the correct verb? "___ the laundry"',
+   o:['Do','Make','Wash','Clean'],
+   a:0,e:'"Do the laundry" — always "do." British English: "do the hoovering" (vacuuming). You "make" things (beds, mistakes, coffee), but you "do" chores (laundry, washing up, ironing).'},
+
+  // ═══ UNIT 5 — Media & News ═══
+  {id:1041,u:5,cat:'prep',t:'fill',q:'The documentary focused ___ the impact of social media on teenagers.',
+   a:'on',e:'"Focus ON something." Always "on." E.g. "The article focuses on the rise of misinformation."'},
+  {id:1042,u:5,cat:'prep',t:'fill',q:'She was accused ___ spreading misinformation on her social media accounts.',
+   a:'of',e:'"Accused OF doing something." Always "of." The four crime/blame prepositions: accused OF, convicted OF, charged WITH, arrested FOR.'},
+  {id:1043,u:5,cat:'phrasal',t:'mcq',q:'"The scandal came out last week" means…',
+   o:['The scandal became publicly known','The scandal was resolved','The scandal was denied','The scandal got worse'],
+   a:0,e:'"Come out" = become publicly known or be published/released. E.g. "The report came out on Friday." "The truth finally came out."'},
+  {id:1044,u:5,cat:'phrasal',t:'mcq',q:'Complete: "I like having the news in the ___."',
+   o:['background','foreground','distance','corner'],
+   a:0,e:'"Have something in the background" = have it playing quietly while you do other things. From class notes Dec 2025: "to have news in the background to keep you company."'},
+  {id:1045,u:5,cat:'pattern',t:'mcq',q:'Which rule do English newspaper headlines follow?',
+   o:['Use simple present to describe past events','Use past simple for all events','Omit the subject always','Use present perfect for recent events'],
+   a:0,e:'Headlines use the simple present for past events because it sounds more immediate and dramatic. "PRESIDENT SIGNS BILL" describes something that already happened.'},
+  {id:1046,u:5,cat:'pattern',t:'mcq',q:'"The bridge was built in 1902" uses the passive because…',
+   o:['The builder is unknown or irrelevant','The bridge is more important than any person','It sounds more formal','The action happened in the past'],
+   a:0,e:'The passive shifts focus away from who did the action to the action/result itself. If we don\'t know who built it, or it doesn\'t matter, passive is the natural choice.'},
+  {id:1047,u:5,cat:'colloc',t:'mcq',q:'A "broadsheet" newspaper is associated with…',
+   o:['Serious, in-depth journalism','Celebrity gossip and entertainment','Sports results','Free commuter content'],
+   a:0,e:'Broadsheets (The Guardian, The Times) = quality journalism. Tabloids (The Sun) = entertainment-focused. The name came from the large paper format they originally used.'},
+  {id:1048,u:5,cat:'colloc',t:'mcq',q:'"It\'s pouring outside" means…',
+   o:['It\'s raining very heavily','It\'s raining lightly','It\'s about to rain','It rained earlier'],
+   a:0,e:'"Pouring" = raining very heavily. Full form: "It\'s pouring with rain." Other levels: "drizzling" (light), "spitting" (just starting).'},
+
+  // ═══ UNIT 6 — Contrast & Causative ═══
+  {id:1049,u:6,cat:'prep',t:'fill',q:'"___ the other hand, living in the city has clear advantages."',
+   a:'On',e:'"On the other hand" = introducing a contrasting viewpoint. Always "on." Often paired with "on the one hand." Don\'t say "in the other hand."'},
+  {id:1050,u:6,cat:'prep',t:'fill',q:'"Contrary ___ what people think, learning a language isn\'t about grammar rules."',
+   a:'to',e:'"Contrary TO something." Always "to." This is different from "unlike" which takes NO preposition: "Unlike other methods..."'},
+  {id:1051,u:6,cat:'phrasal',t:'mcq',q:'"She had her car repaired" is an example of…',
+   o:['Causative (have + object + past participle)','Passive voice (be + past participle)','Past perfect','A future arrangement'],
+   a:0,e:'Causative = have/get + object + past participle. It means someone else did the action for you. "She had her car REPAIRED" = a mechanic repaired it for her.'},
+  {id:1052,u:6,cat:'phrasal',t:'mcq',q:'Difference between "have sth done" and "get sth done"?',
+   o:['"Have" is more formal/neutral; "get" is more informal','They mean completely different things','Only "get" can be used in the past','The structures are grammatically different'],
+   a:0,e:'Both = causative (someone does it for you). "I had my hair cut" (neutral/formal). "I got my hair cut" (informal). Structure is identical: have/get + obj + past participle.'},
+  {id:1053,u:6,cat:'pattern',t:'mcq',q:'"What is more, the rent is cheaper too." What does "what is more" add?',
+   o:['An additional point that further supports the argument','A contrasting idea','A summary of previous points','A conclusion'],
+   a:0,e:'"What is more" = furthermore, in addition — and the new point REINFORCES the previous one. Stronger and more emphatic than "also."'},
+  {id:1054,u:6,cat:'pattern',t:'mcq',q:'"Having said that, city life can be very stressful." What does "having said that" signal?',
+   o:['A contrasting idea despite the previous point','A summary of what was said','Agreement with the previous point','A reason'],
+   a:0,e:'"Having said that" = but, however — introduces a contrast or qualification after conceding a point. It acknowledges the previous view before offering a different one.'},
+  {id:1055,u:6,cat:'colloc',t:'mcq',q:'Which discourse marker introduces contrast?',
+   o:['Nevertheless','Furthermore','What is more','In addition'],
+   a:0,e:'"Nevertheless" = despite what was just said, here is a contrasting point. "Furthermore," "what is more," and "in addition" all ADD to the previous point.'},
+  {id:1056,u:6,cat:'colloc',t:'fill',q:'"Being a celebrity looks glamorous; ___ said that, it can be mentally very draining."',
+   a:'having',e:'"Having said that" — always "having" (present participle). This fixed discourse marker introduces a contrasting point after conceding something.'},
+
+  // ═══ UNIT 7 — Formal Writing ═══
+  {id:1057,u:7,cat:'prep',t:'fill',q:'I look forward ___ hearing from you at your earliest convenience.',
+   a:'to',e:'"Look forward TO + -ing." This "to" is a PREPOSITION (not part of an infinitive), so it must be followed by a gerund (-ing). Common error: "look forward to hear."'},
+  {id:1058,u:7,cat:'prep',t:'fill',q:'She was deeply grateful ___ all the help she received.',
+   a:'for',e:'"Grateful FOR something" = thankful for what you received. "Grateful TO someone" = thankful towards a person. Both correct depending on what follows.'},
+  {id:1059,u:7,cat:'phrasal',t:'mcq',q:'"Making small talk" means…',
+   o:['Having light, casual conversation about unimportant topics','Speaking very quietly','Giving a short speech','Complaining politely'],
+   a:0,e:'"Small talk" = light, polite conversation about trivial things (weather, weekend). A key social skill in English-speaking cultures, especially at the start of meetings.'},
+  {id:1060,u:7,cat:'phrasal',t:'mcq',q:'"They indulged their grandchildren\'s every whim" means…',
+   o:['They gave in to every desire or request','They taught them strict discipline','They ignored their requests','They only rewarded good behaviour'],
+   a:0,e:'"Indulge someone\'s whims" = satisfy their desires, even unreasonable ones. A "whim" = a sudden, often illogical desire. From class notes Dec 2025.'},
+  {id:1061,u:7,cat:'pattern',t:'mcq',q:'When should you use "Yours faithfully" in a formal letter?',
+   o:['When beginning with "Dear Sir/Madam" (unknown recipient)','When you know the person\'s name','When writing to a friend','When ending an email'],
+   a:0,e:'Rule: "Dear Sir/Madam" → "Yours faithfully." "Dear Mr/Ms Smith" (you know their name) → "Yours sincerely." Memory tip: if you know their name, you can be sincere.'},
+  {id:1062,u:7,cat:'pattern',t:'mcq',q:'Which closing is correct for a letter beginning "Dear Ms García"?',
+   o:['Yours sincerely','Yours faithfully','Kind regards','Best wishes'],
+   a:0,e:'You know the name (Ms García) → "Yours sincerely." "Yours faithfully" is only for "Dear Sir/Madam." "Kind regards"/"Best wishes" are used in less formal correspondence.'},
+  {id:1063,u:7,cat:'colloc',t:'mcq',q:'Which is the correct expression?',
+   o:['"Mow the lawn"','"Cut the lawn"','"Do the lawn"','"Make the lawn"'],
+   a:0,e:'"Mow the lawn" = cut the grass with a lawnmower. The only correct verb is "mow." You can say "cut the grass" but not "cut/do/make the lawn."'},
+  {id:1064,u:7,cat:'colloc',t:'mcq',q:'"Christmas baubles" are…',
+   o:['Round, shiny decorations hung on the Christmas tree','Small gift boxes','Christmas cards','Advent candles'],
+   a:0,e:'"Baubles" = round, colourful, reflective decorations hung on the Christmas tree. From class Dec 15, 2025. Related: tinsel, wrapping paper, advent calendar, Christmas cracker.'},
+
+  // ═══ UNIT 8 — Goals & Habits ═══
+  {id:1065,u:8,cat:'prep',t:'fill',q:'She set ___ to make a real difference in her community.',
+   a:'out',e:'"Set OUT to do something" = begin with a clear purpose or goal. "Out" is the particle. E.g. "He set out to prove everyone wrong."'},
+  {id:1066,u:8,cat:'prep',t:'fill',q:'I haven\'t got ___ to replying to her yet — I keep putting it off.',
+   a:'around',e:'"Get AROUND to + -ing" = finally find the time to do something you\'ve been postponing. Always "around to." E.g. "I never got around to reading that book."'},
+  {id:1067,u:8,cat:'phrasal',t:'mcq',q:'"Problems keep cropping up at the worst moments." What does "crop up" mean?',
+   o:['Appear suddenly and unexpectedly','Get progressively worse','Be solved one by one','Be discussed in a meeting'],
+   a:0,e:'"Crop up" = appear suddenly and unexpectedly — usually problems or topics. E.g. "New issues kept cropping up during the meeting." From class notes Dec 29, 2025.'},
+  {id:1068,u:8,cat:'phrasal',t:'mcq',q:'"Let\'s map out our strategy before we begin." What does "map out" mean?',
+   o:['Plan carefully and in detail','Draw a visual diagram','Write a brief summary','Agree on a final decision'],
+   a:0,e:'"Map out" = plan something carefully, step by step. From class: "map out = to plan." Like drawing a map of your route before you set off.'},
+  {id:1069,u:8,cat:'phrasal',t:'fill',q:'She wants to break ___ ___ the routine of working late every single night.',
+   a:'free from',e:'"Break free FROM something" = escape from a constraint, habit, or limitation. From class notes: "break free from..." Requires "from."'},
+  {id:1070,u:8,cat:'pattern',t:'mcq',q:'"It\'s high time you started taking this seriously." The verb after "it\'s high time" is in…',
+   o:['Past simple (even though the meaning is present/future)','Present simple','Infinitive','Present continuous'],
+   a:0,e:'"It\'s high time + past simple." The past tense here doesn\'t refer to the past — it expresses urgency about something that should happen NOW.'},
+  {id:1071,u:8,cat:'pattern',t:'mcq',q:'"I haven\'t got around to writing my resolutions yet." What comes after "get around to"?',
+   o:['A gerund (-ing form)','An infinitive (to + verb)','A past participle','A noun phrase only'],
+   a:0,e:'"Get around TO + -ing." Because "to" here is a PREPOSITION (not part of infinitive), it must be followed by a gerund. Same as "look forward to doing."'},
+  {id:1072,u:8,cat:'colloc',t:'mcq',q:'"She passed her exam with flying colours" means…',
+   o:['She passed brilliantly with an excellent result','She barely passed','She failed the first time','She got lucky'],
+   a:0,e:'"With flying colours" = with great success and distinction. From class notes Dec 29, 2025. Naval origin: a victorious ship would display all its flags ("colours").'},
+  {id:1073,u:8,cat:'colloc',t:'fill',q:'"Slow but ___ wins the race." (proverb)',
+   a:'steady',e:'"Slow but steady wins the race" = consistent effort over time leads to success. From class notes Dec 29, 2025.'},
+
+  // ═══ UNIT 9 — Happiness & Hygge ═══
+  {id:1074,u:9,cat:'prep',t:'fill',q:'She seemed perfectly content ___ her quiet, simple life in the countryside.',
+   a:'with',e:'"Content WITH something" = satisfied and at peace with your situation. Pattern: content WITH, satisfied WITH, happy WITH, pleased WITH — all use "with."'},
+  {id:1075,u:9,cat:'prep',t:'fill',q:'I prefer mountains ___ the beach — I love the fresh air and the silence.',
+   a:'to',e:'"Prefer X TO Y" = like X more than Y. Always "to," never "than." E.g. "She prefers tea to coffee." Common error: "prefer X than Y."'},
+  {id:1076,u:9,cat:'phrasal',t:'mcq',q:'"Having a lie-in" means…',
+   o:['Staying in bed longer than usual in the morning','Going to bed very late','Taking an afternoon nap','Sleeping badly'],
+   a:0,e:'"Having a lie-in" = staying in bed past your normal wake-up time. British English. From class notes. American English equivalent: "sleeping in."'},
+  {id:1077,u:9,cat:'phrasal',t:'mcq',q:'"She\'s been on cloud nine since she got the news." This means…',
+   o:['She\'s extremely happy and elated','She\'s been very stressed and distracted','She\'s been unrealistic about something','She\'s been very busy'],
+   a:0,e:'"On cloud nine" = extremely happy, elated. From class notes: "ON cloud nine = ELATED." Related: "I\'m all smiles," "over the moon," "on top of the world."'},
+  {id:1078,u:9,cat:'pattern',t:'mcq',q:'Which sentence is correct?',
+   o:['"She did it in order to save money."','"She did it in order for saving money."','"She did it in order save money."','"She did it in order of saving money."'],
+   a:0,e:'"In order to + infinitive" = purpose. "In order FOR + person + to + verb" is also correct when the subject changes: "I left early in order for them to have space."'},
+  {id:1079,u:9,cat:'pattern',t:'mcq',q:'"Content" as an adjective means…',
+   o:['Quietly satisfied and at peace with your situation','Very excited and joyful','Bored and listless','Worried about the future'],
+   a:0,e:'"Content" = a calm, settled happiness — not as intense as "elated" or "overjoyed." From class notes: "content = satisfied/happy."'},
+  {id:1080,u:9,cat:'colloc',t:'mcq',q:'Hygge (Danish concept) is primarily about…',
+   o:['Creating cosiness, warmth, and simple pleasure with others','Eating very healthy food','Spending time alone in nature','Minimalism and reducing consumption'],
+   a:0,e:'Hygge (pronounced "hoo-ga") = a Danish concept of cosiness, comfort, and enjoying simple pleasures — candles, good food, close friends. From Unit 9 course material.'},
+  {id:1081,u:9,cat:'colloc',t:'fill',q:'She was on cloud ___ after hearing she\'d got the job.',
+   a:'nine',e:'"On cloud nine" = extremely happy. Always "nine" — not eight or ten. From class notes Feb 11, 2026.'},
+
+  // ═══ UNIT 10 — Public Speaking ═══
+  {id:1082,u:10,cat:'prep',t:'fill',q:'She\'s famous ___ her ability to motivate large audiences.',
+   a:'for',e:'"Famous FOR something/doing something." Always "for." Contrast: "famous AS" = known in the role of: "famous as a writer."'},
+  {id:1083,u:10,cat:'prep',t:'fill',q:'He has no financial ___ to pursue a university education.',
+   a:'means',e:'"No financial means" = no money or resources. "Means" is always plural here. Important fixed phrase from class Jan 12, 2026.'},
+  {id:1084,u:10,cat:'phrasal',t:'mcq',q:'"Window shopping" means…',
+   o:['Looking at shop displays without intending to buy','Buying things through a shop\'s website','Browsing at night when shops are closed','Shopping very quickly'],
+   a:0,e:'"Window shopping" = looking at shop windows or browsing without buying. From class notes Jan 12, 2026.'},
+  {id:1085,u:10,cat:'phrasal',t:'mcq',q:'"I\'m a bundle of nerves before a presentation." What does this mean?',
+   o:['I\'m extremely nervous and anxious','I\'m very well-prepared','I\'m very excited about it','I have a lot of energy'],
+   a:0,e:'"Bundle of nerves" = an extremely anxious person. From class vocabulary Jan 12, 2026: "I\'m a bundle of nerves, my palms get sweaty, my mouth goes dry."'},
+  {id:1086,u:10,cat:'pattern',t:'fill',q:'"It\'s high time you ___ (take) this opportunity seriously." (correct form)',
+   a:'took',e:'"It\'s high time + past simple." Even though we\'re talking about the present/future, the verb must be in the past simple. "It\'s high time you TOOK, started, stopped..."'},
+  {id:1087,u:10,cat:'pattern',t:'mcq',q:'"My mouth goes dry before public speaking." This is an example of…',
+   o:['A physical symptom of nervousness','An idiom for forgetting your speech','A metaphor for silence','A collocation for preparation'],
+   a:0,e:'A physical sign of anxiety — the body reacts to stress by reducing saliva. Related expressions: "my palms get sweaty," "I get fidgety," "butterflies in my stomach."'},
+  {id:1088,u:10,cat:'colloc',t:'mcq',q:'"Stage fright" is…',
+   o:['Extreme anxiety or nervousness before performing in public','Fear of the dark on stage','A type of performance art','A phobia of heights'],
+   a:0,e:'"Stage fright" = nervousness when about to perform or speak in front of an audience. From class notes Jan 12, 2026.'},
+  {id:1089,u:10,cat:'colloc',t:'fill',q:'She gets butterflies ___ her stomach every time she has to give a presentation.',
+   a:'in',e:'"Butterflies IN my/your stomach" = the nervous, fluttery feeling before something stressful or exciting. Always "in." Never "on" or "at."'},
+
+  // ═══ UNIT 11 — Blue Zones ═══
+  {id:1090,u:11,cat:'prep',t:'fill',q:'This type of diet is typical ___ all five Blue Zone regions.',
+   a:'of',e:'"Typical OF a place/group." Always "of." E.g. "This weather is typical of the region in winter."'},
+  {id:1091,u:11,cat:'prep',t:'fill',q:'People in Blue Zones are not dependent ___ processed or fast food.',
+   a:'on',e:'"Dependent ON something." Always "on." E.g. "She\'s too dependent on her phone." Also: "rely ON," "depend ON."'},
+  {id:1092,u:11,cat:'prep',t:'fill',q:'___ other regions, Blue Zones have significantly higher rates of centenarians.',
+   a:'Unlike',e:'"Unlike + noun/pronoun" — NO preposition. "Unlike TO" is always wrong. Contrast: "contrary TO" (which DOES take "to").'},
+  {id:1093,u:11,cat:'phrasal',t:'mcq',q:'In Okinawa, "ikigai" refers to…',
+   o:['Your reason for being — your life purpose','A type of traditional diet','A form of meditation','A social ceremony'],
+   a:0,e:'"Ikigai" (Japanese) = your reason for getting up each morning. Blue Zone research shows that having a clear life purpose strongly correlates with longevity.'},
+  {id:1094,u:11,cat:'phrasal',t:'mcq',q:'A "moai" in Okinawan culture is…',
+   o:['A close lifelong social support group','A traditional Okinawan dish','A form of exercise','A daily ritual'],
+   a:0,e:'A "moai" = a social support group whose members commit to meeting regularly and supporting each other for life. Strong social bonds are a key Blue Zone factor.'},
+  {id:1095,u:11,cat:'pattern',t:'mcq',q:'Which sentence is correct?',
+   o:['"Unlike other regions, Blue Zones have more centenarians."','"Unlike to other regions, Blue Zones have more centenarians."','"Unlike of other regions, Blue Zones have more centenarians."','"Alike other regions, Blue Zones have more centenarians."'],
+   a:0,e:'"Unlike + noun/pronoun" — no "to." "Unlike to" is always wrong. "Contrary to" (a different construction) does take "to": "Contrary to what people believe..."'},
+  {id:1096,u:11,cat:'pattern',t:'mcq',q:'A "centenarian" is…',
+   o:['A person aged 100 or over','A person who lives in a Blue Zone','A person who has never been seriously ill','A person who follows a plant-based diet'],
+   a:0,e:'"Centenarian" = a person aged 100 or over. Blue Zones have disproportionately high concentrations of centenarians compared to the global average.'},
+  {id:1097,u:11,cat:'colloc',t:'mcq',q:'"Moderate consumption" means eating or drinking…',
+   o:['In reasonable, limited amounts — not too much or too little','Only on special occasions','In very large quantities','As little as possible'],
+   a:0,e:'"Moderate" = not excessive in either direction. Blue Zone diets allow moderate alcohol — not abstinence, not excess. The key is balance.'},
+
+  // ═══ UNIT 12 — Crime & Law ═══
+  {id:1098,u:12,cat:'prep',t:'fill',q:'She was arrested ___ possession of stolen property.',
+   a:'for',e:'"Arrested FOR a crime/offence." Always "for." The police arrest you FOR what they suspect you\'ve done.'},
+  {id:1099,u:12,cat:'prep',t:'fill',q:'He was found guilty ___ all five charges at the end of the trial.',
+   a:'of',e:'"Guilty OF something." Always "of." The full set: arrested FOR, charged WITH, convicted OF, guilty OF, accused OF, sentenced TO, fined FOR.'},
+  {id:1100,u:12,cat:'prep',t:'fill',q:'After the verdict, she was sentenced ___ eight years in prison.',
+   a:'to',e:'"Sentenced TO a period/punishment." Always "to." E.g. "sentenced to 200 hours of community service."'},
+  {id:1101,u:12,cat:'prep',t:'fill',q:'The driver was fined ___ speeding in a residential area.',
+   a:'for',e:'"Fined FOR doing something." Always "for" — shows the reason for the penalty. E.g. "fined £100 for parking on double yellow lines."'},
+  {id:1102,u:12,cat:'phrasal',t:'mcq',q:'"He managed to get away with the fraud for ten years." What does "get away with" mean?',
+   o:['Escape punishment for doing something wrong','Leave the scene of a crime quickly','Commit a crime successfully','Be found innocent'],
+   a:0,e:'"Get away with something" = avoid punishment or consequences for wrongdoing. E.g. "She got away with cheating on the exam for years."'},
+  {id:1103,u:12,cat:'phrasal',t:'mcq',q:'An "accomplice" is someone who…',
+   o:['Helps another person commit a crime','Is the main offender','Witnesses a crime but does nothing','Investigates crimes'],
+   a:0,e:'"Accomplice" = a person who assists in committing a crime, even without committing it directly. From class crime vocabulary Unit 12.'},
+  {id:1104,u:12,cat:'pattern',t:'mcq',q:'In a trial, the "verdict" is…',
+   o:['The jury\'s decision: guilty or not guilty','The punishment given by the judge','The evidence from the prosecution','The opening statement'],
+   a:0,e:'Verdict = the decision. Sentence = the punishment. These are two distinct stages: first the jury delivers the verdict, then the judge passes the sentence.'},
+  {id:1105,u:12,cat:'pattern',t:'mcq',q:'A "miscarriage of justice" is…',
+   o:['An innocent person being wrongly convicted','A case dismissed before trial','A lenient sentence for a serious crime','A procedural error'],
+   a:0,e:'"Miscarriage of justice" = a serious failure of the legal system resulting in an innocent person being convicted. From the class crime reading Unit 12.'},
+  {id:1106,u:12,cat:'colloc',t:'mcq',q:'Difference between a "fine" and a "sentence"?',
+   o:['A fine is money paid as punishment; a sentence is the full punishment (prison, service, etc.)','A fine is more serious than a sentence','They are the same','A fine is police-issued; a sentence is court-issued'],
+   a:0,e:'Fine = financial penalty. Sentence = the judge\'s overall punishment decision — can include prison, community service, a fine, or a suspended sentence.'},
+  {id:1107,u:12,cat:'colloc',t:'mcq',q:'"Shoplifting" is the crime of…',
+   o:['Stealing goods from a shop','Robbing someone in the street','Breaking into a building','Stealing online'],
+   a:0,e:'"Shoplifting" = taking goods from a shop without paying. From the class text on Live Facial Recognition cameras used to reduce shoplifting.'},
+
+  // ═══ UNIT 13 — Fashion & Planet ═══
+  {id:1108,u:13,cat:'prep',t:'fill',q:'Many fast fashion brands are more concerned ___ profit than environmental impact.',
+   a:'about',e:'"Concerned ABOUT something." Always "about." E.g. "I\'m concerned about the amount of waste being produced."'},
+  {id:1109,u:13,cat:'prep',t:'fill',q:'Fast fashion garments are often made ___ cheap synthetic materials that break down quickly.',
+   a:'from',e:'"Made FROM materials" (raw materials transformed into a product). Also: "made OF" (the composition). Both used — "made from plastic bottles," "made of gold."'},
+  {id:1110,u:13,cat:'phrasal',t:'mcq',q:'"Sweep something under the carpet" means to…',
+   o:['Hide or ignore a problem instead of dealing with it','Clean your home very thoroughly','Avoid a topic in conversation','Solve a problem quietly'],
+   a:0,e:'"Sweep/brush sth under the carpet" = pretend a problem doesn\'t exist by hiding it. From class notes. Related: "out of sight, out of mind."'},
+  {id:1111,u:13,cat:'phrasal',t:'mcq',q:'"Out of sight, out of mind" means…',
+   o:['If you can\'t see something, you tend to forget about it','Being invisible is the same as not existing','Distance makes you appreciate things more','We only care about what affects us'],
+   a:0,e:'We forget about things we can\'t see. Applied to fast fashion waste: people throw things away and stop thinking about them because they don\'t see where they go.'},
+  {id:1112,u:13,cat:'pattern',t:'mcq',q:'"To binge-buy" clothing means to…',
+   o:['Buy large amounts compulsively in one session','Buy clothes gradually over time','Shop only for essentials','Buy expensive, high-quality items'],
+   a:0,e:'"Binge" = do something in large, uncontrolled amounts. Fast fashion encourages "binge-buying" — buying many cheap items at once, wearing them briefly, then discarding.'},
+  {id:1113,u:13,cat:'colloc',t:'mcq',q:'"Fussy" or "picky" shoppers are…',
+   o:['Very selective and difficult to please','Those who buy everything they see','Bargain hunters','Shoppers who prefer online stores'],
+   a:0,e:'"Fussy/picky" = very selective, hard to satisfy. From class vocabulary Unit 13: "fussy/picky buyers" who reject imperfect-looking produce or items.'},
+  {id:1114,u:13,cat:'colloc',t:'fill',q:'Vegetable peelings and garden waste can be turned into ___ — a rich, natural fertiliser.',
+   a:'compost',e:'"Compost" = decomposed organic matter used to enrich soil. From class vocabulary Feb 2026: "edible, rot, mouldy, fussy/picky buyers, compost."'},
+
+  // ═══ UNIT 14 — Technology & Waste ═══
+  {id:1115,u:14,cat:'prep',t:'fill',q:'Many teenagers are addicted ___ their phones — they check them hundreds of times a day.',
+   a:'to',e:'"Addicted TO something." Always "to." E.g. "addicted to social media, addicted to caffeine." Related: "dependent ON."'},
+  {id:1116,u:14,cat:'prep',t:'fill',q:'The factory\'s chemicals resulted ___ severe damage to the local river.',
+   a:'in',e:'"Result IN" = cause something as an outcome. The chemicals CAUSED the damage → "resulted in." Contrast: "result FROM" = be caused by.'},
+  {id:1117,u:14,cat:'phrasal',t:'mcq',q:'"Planned obsolescence" means products are…',
+   o:['Deliberately designed to fail after a short time so consumers buy replacements','Built to last as long as possible','Sold cheaply after a set period','Recalled by the manufacturer'],
+   a:0,e:'"Planned obsolescence" = deliberately designing products with a limited lifespan to drive repeat purchases. A core critique of modern tech culture. From class Feb 4, 2026.'},
+  {id:1118,u:14,cat:'phrasal',t:'mcq',q:'The fruit had gone ___. What is the correct word?',
+   o:['mouldy','rotten','stale','edible'],
+   a:0,e:'"Mouldy" = covered in mould (fungal growth). "Rotten" = decomposed, bad smell. "Stale" = dried out and no longer fresh (mainly bread). "Edible" is the OPPOSITE of what we want here.'},
+  {id:1119,u:14,cat:'pattern',t:'mcq',q:'"It is estimated that over 1.3 billion tonnes of food is wasted annually." This impersonal passive is used because…',
+   o:['The source is general — it\'s widely believed without one specific authority','The writer doesn\'t know the statistic','It sounds more dramatic','The passive is always used for statistics'],
+   a:0,e:'Impersonal passive ("it is estimated/believed/thought/projected that…") presents information as generally accepted. Very common in academic and journalistic writing.'},
+  {id:1120,u:14,cat:'colloc',t:'mcq',q:'Food described as "edible" means…',
+   o:['Safe and suitable to eat','Absolutely delicious','Freshly made','Expensive and rare'],
+   a:0,e:'"Edible" = able to be eaten without being harmful. The opposite: "inedible." "Palatable" = tastes acceptable. "Delicious" = tastes great.'},
+  {id:1121,u:14,cat:'colloc',t:'mcq',q:'"E-waste" refers to…',
+   o:['Discarded electrical and electronic equipment','Emails and digital clutter','Packaging from online shopping','Environmental waste in general'],
+   a:0,e:'"E-waste" = electronic waste — discarded phones, computers, TVs, batteries. A growing global environmental problem. From the technology and waste unit.'},
+
+  // ═══ UNIT 15 — Accents & Dialects ═══
+  {id:1122,u:15,cat:'prep',t:'fill',q:'Cockney is similar ___ other London dialects but has unique rhyming slang.',
+   a:'to',e:'"Similar TO something." Always "to." Contrast: "different FROM" something. E.g. "British English is similar to but different from American English."'},
+  {id:1123,u:15,cat:'prep',t:'fill',q:'MLE developed ___ the diverse multicultural communities of inner-city London.',
+   a:'in',e:'"Develop IN a place/context." MLE (Multicultural London English) developed in London\'s diverse urban areas.'},
+  {id:1124,u:15,cat:'phrasal',t:'mcq',q:'"Take the piss" (British slang) means to…',
+   o:['Mock or make fun of someone/something','Leave a situation quickly','Be very serious','Ask for money'],
+   a:0,e:'From class notes: "take the piss = to make a joke about something/someone." Can be affectionate (among friends) or offensive depending on context and tone.'},
+  {id:1125,u:15,cat:'phrasal',t:'mcq',q:'"Fitting in with a group" means…',
+   o:['Being accepted and feeling comfortable as part of the group','Following all the rules exactly','Having the same opinions as everyone','Physically squeezing into a small space'],
+   a:0,e:'"Fit in" = be accepted by a social group and feel you belong. The opposite: "stand out" (be noticeably different). From the class unit on accentism and belonging.'},
+  {id:1126,u:15,cat:'pattern',t:'mcq',q:'RP (Received Pronunciation) is associated with…',
+   o:['The traditional prestige accent of educated British English','The most widely spoken accent in the UK today','A regional northern English dialect','A working-class London accent'],
+   a:0,e:'RP = Received Pronunciation. Historically the accent of the BBC, Oxford, and the upper class. Now less dominant — SSBE (Standard Southern British English) is more common.'},
+  {id:1127,u:15,cat:'pattern',t:'mcq',q:'"Accentism" refers to…',
+   o:['Prejudice or discrimination based on a person\'s accent','The academic study of accents','A speech impediment','The status given to certain accents'],
+   a:0,e:'"Accentism" = judging or discriminating against someone because of their regional or foreign accent. Like racism or ageism in structure. From class notes Feb 2026.'},
+  {id:1128,u:15,cat:'colloc',t:'mcq',q:'MLE stands for…',
+   o:['Multicultural London English','Modern Linguistic Expression','Metropolitan Language Evolution','Mid-Level English'],
+   a:0,e:'MLE = Multicultural London English. A dialect that emerged in London\'s diverse communities, blending features from Caribbean, South Asian, West African, and other languages.'},
+  {id:1129,u:15,cat:'colloc',t:'mcq',q:'Cockney rhyming slang replaces a word with…',
+   o:['A two-word phrase that rhymes with the target word','A shortened version of the word','A word from another language','The opposite meaning word'],
+   a:0,e:'E.g. "apples and pears" = stairs; "dog and bone" = phone. Often the rhyming word is dropped: "I\'ll answer the dog." This makes it very hard for outsiders to understand.'},
+
+  // ═══ UNIT 16 — Travel ═══
+  {id:1130,u:16,cat:'prep',t:'fill',q:'The old town is ___ far the most beautiful part of the city.',
+   a:'by',e:'"By far" = by a great amount — used to emphasise a superlative. "By far the best, worst, most interesting…" From class exercise on comparatives.'},
+  {id:1131,u:16,cat:'prep',t:'fill',q:'She arrived ___ the airport three hours before her flight.',
+   a:'at',e:'"Arrive AT a specific place" (airport, station, hotel, school). "Arrive IN a city/country." Never "arrive TO" — very common error among Spanish speakers.'},
+  {id:1132,u:16,cat:'prep',t:'fill',q:'I have a soft spot ___ small coastal towns that haven\'t changed in centuries.',
+   a:'for',e:'"Soft spot FOR someone/something" = a special feeling of fondness. Always "for." From class notes Mar 16, 2026.'},
+  {id:1133,u:16,cat:'prep',t:'fill',q:'The beach was ___ with tourists during peak season — you could barely move.',
+   a:'packed/crowded',e:'"Packed WITH" or "crowded WITH" = completely full of people. From class notes: "crowded with / packed with." Always "with" after both words.'},
+  {id:1134,u:16,cat:'phrasal',t:'mcq',q:'"Having itchy feet" means…',
+   o:['Feeling a strong desire to travel or move somewhere new','Having a foot condition from walking','Being restless at work','Wanting to run away from problems'],
+   a:0,e:'From class notes Mar 2026: "itchy feet" = a restless urge to travel or experience something new. E.g. "After five years in the same city, I had itchy feet."'},
+  {id:1135,u:16,cat:'phrasal',t:'mcq',q:'"Travel takes your mind off work." What does "take your mind off" mean?',
+   o:['Distract you from something and help you stop thinking about it','Help you think more clearly','Help you make decisions','Make you more focused on work'],
+   a:0,e:'"Take your mind off something" = provide a distraction from something stressful. From class notes Mar 2026: "to take your mind off work / problems."'},
+  {id:1136,u:16,cat:'phrasal',t:'mcq',q:'"She made a trip to Patagonia." Why is "do a trip" wrong?',
+   o:['"Do a trip" is incorrect — the correct collocation is "make a trip"','They are equally correct','You should say "take a trip"','You should say "go a trip"'],
+   a:0,e:'From class notes: "make a trip (NOT do a trip)." Common error for Spanish speakers ("hacer un viaje"). You can also "go on a trip" or "take a trip."'},
+  {id:1137,u:16,cat:'pattern',t:'mcq',q:'"Paris is nowhere near as expensive as London." The structure "nowhere near as… as" means…',
+   o:['Much less than (a large difference in comparison)','Slightly less than','About the same as','A negative superlative'],
+   a:0,e:'"Nowhere near as… as" = much less than — emphasises the difference is very large. From class exercise: "nowhere near as crowded as Rome."'},
+  {id:1138,u:16,cat:'pattern',t:'mcq',q:'Complete correctly: "Rome is ___ far the most beautiful city I\'ve ever visited."',
+   o:['by','so','very','such'],
+   a:0,e:'"By far" + superlative. You cannot say "so far the most," "very far the most," etc. "By far" is the fixed intensifier for superlatives.'},
+  {id:1139,u:16,cat:'colloc',t:'mcq',q:'"Travelling on a shoestring" means…',
+   o:['Travelling with a very small budget','Travelling light with little luggage','Travelling alone','Travelling very slowly'],
+   a:0,e:'"On a shoestring" = with very little money. From class notes: "travel on a budget / on a shoestring." A shoestring is thin and cheap — the metaphor captures extreme frugality.'},
+  {id:1140,u:16,cat:'colloc',t:'mcq',q:'A "tourist trap" is…',
+   o:['An overpriced, overrated place designed to extract money from tourists','An unusually crowded tourist attraction','A hidden gem only locals know about','A dangerous area for travellers'],
+   a:0,e:'A tourist trap = a business or attraction that overcharges tourists who don\'t know any better. From class vocabulary Mar 2026.'},
+
+  // ═══ UNIT 17 — Anger & Complaints ═══
+  {id:1141,u:17,cat:'prep',t:'fill',q:'He always brags ___ how much he earns — it makes everyone uncomfortable.',
+   a:'about',e:'"Brag ABOUT something." Always "about." Same pattern: "boast about," "complain about," "talk about," "worry about."'},
+  {id:1142,u:17,cat:'prep',t:'fill',q:'It took her months to get ___ the disappointment of not getting the job.',
+   a:'over',e:'"Get OVER something" = recover from, stop being upset about. E.g. "I can\'t get over how rude he was."'},
+  {id:1143,u:17,cat:'prep',t:'fill',q:'She called her friend because she needed someone to vent ___.',
+   a:'to',e:'"Vent TO someone" = express anger or frustration to a person. If no specific recipient: just "vent" alone. "She needed to vent." / "She vented TO her friend."'},
+  {id:1144,u:17,cat:'phrasal',t:'mcq',q:'"She finally opened up about how she was feeling." What does "open up" mean?',
+   o:['Start talking honestly about your thoughts or feelings','Change your opinion about something','Admit making a mistake','Begin a new activity'],
+   a:0,e:'"Open up" = become willing to talk honestly about personal feelings or problems. From class notes: "He opened up. He talked about how all this can be overcome."'},
+  {id:1145,u:17,cat:'phrasal',t:'mcq',q:'"I can\'t get behind that plan." What does this mean?',
+   o:['I can\'t support or endorse that plan','I don\'t understand the plan','I disagree for financial reasons','I arrived after the plan was made'],
+   a:0,e:'"Get behind" = support, back, endorse. "I can\'t get behind it" = I don\'t support it. From class notes: "you get behind." E.g. "The whole team got behind the new strategy."'},
+  {id:1146,u:17,cat:'phrasal',t:'mcq',q:'"We need to catch up soon!" What does "catch up" mean here?',
+   o:['Meet and share news after not having seen each other for a while','Reach the same level as someone faster','Sprint to reach someone ahead of you','Apologise for a long silence'],
+   a:0,e:'"Catch up (WITH someone)" = spend time together to exchange news after a period apart. From class notes: "There\'s a lot to catch up with."'},
+  {id:1147,u:17,cat:'pattern',t:'mcq',q:'"It drives me up the wall" means…',
+   o:['It annoys me extremely','It impresses me greatly','It confuses me completely','It makes me very sad'],
+   a:0,e:'"Drive someone up the wall" = make someone very frustrated or irritated. Synonyms: "wind me up," "tick me off," "get on my nerves." A very common British idiom.'},
+  {id:1148,u:17,cat:'pattern',t:'mcq',q:'"She showed off her new car to everyone." "Show off" means to…',
+   o:['Display something to impress others','Hide something valuable','Demonstrate something to teach others','Share something generously'],
+   a:0,e:'"Show off" = deliberately display achievements, possessions, or skills to get admiration. From class: "To show off on social media. A real show-off." (noun form too)'},
+  {id:1149,u:17,cat:'colloc',t:'mcq',q:'A "pet peeve" is…',
+   o:['Something that personally and particularly annoys you','A favourite animal','A formal complaint','A small personal preference'],
+   a:0,e:'"Pet peeve" = a specific personal irritant — something that bothers YOU even if others don\'t mind. "Pet" here means personal/particular. From class notes Mar 25, 2026.'},
+  {id:1150,u:17,cat:'colloc',t:'fill',q:'He\'s been ___ ever since he was passed over for the promotion — he can\'t hide his resentment.',
+   a:'disgruntled',e:'"Disgruntled" = feeling unhappy and resentful, especially after being treated unfairly. More formal than "upset" or "angry." From class notes Mar 25, 2026.'},
+  {id:1151,u:17,cat:'colloc',t:'mcq',q:'"Rage-baiting" means…',
+   o:['Deliberately posting provocative content online to make people angry','Venting your anger constructively','Discussing anger issues calmly','Reporting angry content online'],
+   a:0,e:'"Rage-baiting" = intentionally creating content designed to provoke anger and drive engagement/reactions. From class notes Mar 25, 2026. Related: "clickbait."'},
+];
+
+// ══════════════════════════════════════════════════════
 //  UNIT DEFINITIONS
 // ══════════════════════════════════════════════════════
 const UNITS = [
@@ -1121,7 +1611,7 @@ function showView(name) {
   document.getElementById('view-'+name).classList.add('active');
   const nb = document.getElementById('nav-'+name);
   if(nb) nb.classList.add('active');
-  ({home:renderHome, units:renderUnits, progress:renderProgress, settings:renderSettings}[name]||noop)();
+  ({home:renderHome, units:renderUnits, progress:renderProgress, settings:renderSettings, grammar:renderGrammar}[name]||noop)();
 }
 function noop(){}
 
@@ -1245,6 +1735,58 @@ function renderSettings() {
 }
 
 // ══════════════════════════════════════════════════════
+//  GRAMMAR FOCUS
+// ══════════════════════════════════════════════════════
+const CAT_META = {
+  prep:    {label:'Prepositions', icon:'🔗', cls:'prep'},
+  phrasal: {label:'Phrasal Verbs', icon:'🔄', cls:'phrasal'},
+  pattern: {label:'Patterns',     icon:'✏️',  cls:'pattern'},
+  colloc:  {label:'Collocations', icon:'💬', cls:'colloc'},
+};
+
+function renderGrammar() {
+  const el = document.getElementById('gpUnitList');
+  el.innerHTML = UNITS.map(u => {
+    const cats = Object.entries(CAT_META).map(([cat, meta]) => {
+      const count = GP.filter(g => g.u === u.id && g.cat === cat).length;
+      const disabled = count === 0 ? 'disabled' : '';
+      return `<button class="gp-btn ${meta.cls}" onclick="startGPDrill(${u.id},'${cat}')" ${disabled}>
+        <span class="gp-btn-label">${meta.icon} ${meta.label}</span>
+        <span class="gp-btn-count">${count}</span>
+      </button>`;
+    }).join('');
+    return `<div class="gp-card">
+      <div class="gp-unit-hdr">
+        <div class="gp-unit-emoji" style="background:${u.color}22">${u.emoji}</div>
+        <div class="gp-unit-info">
+          <div class="gp-unit-name">Unit ${u.id}: ${u.name}</div>
+          <div class="gp-unit-sub">${u.sub}</div>
+        </div>
+      </div>
+      <div class="gp-cats">${cats}</div>
+    </div>`;
+  }).join('');
+}
+
+let gpMode = false, gpScore = 0;
+
+function startGPDrill(unitId, cat) {
+  const pool = GP.filter(g => g.u === unitId && g.cat === cat);
+  if (!pool.length) return;
+  // Shuffle and take up to 10
+  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+  session = shuffled.slice(0, Math.min(10, shuffled.length));
+  idx = 0; answered = false; gpMode = true; gpScore = 0;
+  enterQuizView();
+  renderQ();
+}
+
+function exitGPDrill() {
+  gpMode = false;
+  showView('grammar');
+}
+
+// ══════════════════════════════════════════════════════
 //  QUIZ ENGINE
 // ══════════════════════════════════════════════════════
 const SESSION = 10;
@@ -1278,18 +1820,18 @@ function enterQuizView() {
   document.getElementById('feedbackBar').classList.remove('show');
 }
 
-function exitQuiz() { showView('home'); }
+function exitQuiz() { if(gpMode){ gpMode=false; showView('grammar'); } else { showView('home'); } }
 
 function renderQ() {
   const q = session[idx];
   const u = UNITS.find(u=>u.id===q.u);
-  document.getElementById('quizBarFill').style.width=(idx/SESSION*100)+'%';
-  document.getElementById('quizCounter').textContent=`${idx+1}/${SESSION}`;
+  document.getElementById('quizBarFill').style.width=(idx/session.length*100)+'%';
+  document.getElementById('quizCounter').textContent=`${idx+1}/${session.length}`;
   document.getElementById('feedbackBar').classList.remove('show');
   answered=false;
   document.getElementById('quizContent').innerHTML=`
     <div class="quiz-unit-tag">Unit ${q.u}: ${u.name}</div>
-    <div class="quiz-type-badge">${q.t==='mcq'?'Multiple Choice':'Fill in the Blank'}</div>
+    <div class="quiz-type-badge">${gpMode ? (CAT_META[q.cat]?.icon+' '+CAT_META[q.cat]?.label) : (q.t==='mcq'?'Multiple Choice':'Fill in the Blank')}</div>
     <div class="quiz-q" style="white-space:pre-line">${q.q}</div>
     ${q.t==='mcq'?mcqHTML(q):fillHTML(q)}`;
 }
@@ -1318,7 +1860,8 @@ function fillHTML(q){
   const cat = answerCategory(correct);
   const seen = new Set([correct.toLowerCase()]);
 
-  const others = Q.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a);
+  const pool0 = gpMode ? GP.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a) : Q.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a);
+  const others = pool0.length >= 9 ? pool0 : [...pool0, ...Q.filter(o=>o.t==='fill'&&o.id!==q.id&&o.a&&!pool0.includes(o))];
   const sameCategory=[], fallback=[];
 
   for(const o of others){
@@ -1343,9 +1886,11 @@ function fillHTML(q){
       <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
 }
 
+function findQ(qId){ return gpMode ? GP.find(g=>g.id===qId) : Q.find(q=>q.id===qId); }
+
 function answerFillOpt(qId, sel, ci){
   if(answered) return; answered=true;
-  const q=Q.find(q=>q.id===qId);
+  const q=findQ(qId);
   document.querySelectorAll('.opt-btn').forEach((b,i)=>{
     b.onclick=null;
     if(i===ci) b.classList.add('correct');
@@ -1357,7 +1902,7 @@ function answerFillOpt(qId, sel, ci){
 
 function answerMCQ(qId, sel) {
   if(answered) return; answered=true;
-  const q=Q.find(q=>q.id===qId);
+  const q=findQ(qId);
   const ok = sel===q.a;
   document.querySelectorAll('.opt-btn').forEach((b,i)=>{
     b.onclick=null;
@@ -1384,6 +1929,11 @@ function answerFill(qId) {
 }
 
 function processAnswer(q, ok) {
+  if(gpMode) {
+    if(ok) gpScore++;
+    showFeedback(q, ok);
+    return;
+  }
   // Spaced repetition
   S.weights[q.id] = ok
     ? Math.max(0.1, S.weights[q.id]*0.5)
@@ -1430,20 +1980,47 @@ function showFeedback(q, ok) {
   const btn=document.getElementById('continueBtn');
   box.className='feedback-box '+(ok?'correct':'wrong');
   title.className='feedback-title '+(ok?'correct':'wrong');
-  title.textContent = ok ? '✓ Correct! +10 XP' : '✗ Incorrect +2 XP';
+  title.textContent = ok ? (gpMode ? '✓ Correct!' : '✓ Correct! +10 XP') : (gpMode ? '✗ Incorrect' : '✗ Incorrect +2 XP');
   let txt = q.e;
   if(!ok && q.t==='fill') txt=`Correct answer: "${q.a}". ${q.e}`;
   else if(!ok && q.t==='mcq') txt=`Correct: "${q.o[q.a]}". ${q.e}`;
   exp.textContent=txt;
   btn.className='btn-continue '+(ok?'correct':'wrong');
-  btn.textContent=idx+1>=SESSION?'FINISH':'CONTINUE';
+  btn.textContent=idx+1>=session.length?'FINISH':'CONTINUE';
   document.getElementById('feedbackBar').classList.add('show');
 }
 
 function nextQuestion() {
   idx++;
-  if(idx>=SESSION){ exitQuiz(); return; }
+  if(idx >= session.length) {
+    if(gpMode) { showGPResults(); return; }
+    exitQuiz(); return;
+  }
   renderQ();
+}
+
+function showGPResults() {
+  document.getElementById('feedbackBar').classList.remove('show');
+  const total = session.length;
+  const pct = Math.round(gpScore/total*100);
+  const msg = pct===100 ? '🏆 Perfect score!' : pct>=80 ? '🌟 Excellent!' : pct>=60 ? '👍 Good work!' : '📖 Keep practising!';
+  document.getElementById('quizContent').innerHTML = `
+    <div class="gp-end">
+      <div class="gp-end-score">${gpScore}/${total}</div>
+      <div class="gp-end-label">${pct}% correct</div>
+      <div class="gp-end-msg">${msg}</div>
+      <div style="height:24px"></div>
+      <button class="btn-primary" onclick="exitGPDrill()">Back to Grammar</button>
+      <button class="btn-secondary" onclick="retryGPDrill()" style="margin-top:10px">Try again</button>
+    </div>`;
+  document.getElementById('quizBarFill').style.width = '100%';
+}
+
+function retryGPDrill() {
+  // Re-shuffle the same unit+cat
+  const cat = session[0].cat;
+  const uid = session[0].u;
+  startGPDrill(uid, cat);
 }
 
 // ══════════════════════════════════════════════════════
