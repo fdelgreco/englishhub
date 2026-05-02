@@ -2196,25 +2196,26 @@ function keyHTML(q){
   const sentences = q.s.map((s,i)=>
     `<div class="key-sentence"><span class="key-num">${i+1}</span>${s.replace('___','<span class="key-blank"></span>')}</div>`
   ).join('');
-  const distractors = q.d || [];
-  const opts = [...distractors];
-  const ci = Math.floor(Math.random()*4);
-  opts.splice(ci, 0, q.a);
   return `<div class="key-sentences">${sentences}</div>
-    <div class="options">${opts.map((opt,i)=>
-      `<button class="opt-btn" onclick="answerKeyOpt(${q.id},${i},${ci})" data-i="${i}">
-        <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
+    <input id="keyIn" class="fill-input" type="text" placeholder="Type the word…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      onkeydown="if(event.key==='Enter')answerKey(${q.id})">
+    <button class="btn-primary" onclick="answerKey(${q.id})">Check</button>`;
 }
 
-function answerKeyOpt(qId, sel, ci){
-  if(answered) return; answered=true;
-  const q=findQ(qId);
-  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
-    b.onclick=null;
-    if(i===ci) b.classList.add('correct');
-    else if(i===sel&&sel!==ci) b.classList.add('wrong');
-  });
-  processAnswer(q, sel===ci);
+function answerKey(qId){
+  if(answered) return;
+  const input = document.getElementById('keyIn');
+  const val = (input.value||'').trim().toLowerCase();
+  if(!val) return;
+  answered = true;
+  const q = findQ(qId);
+  const accepted = (q.a+'').toLowerCase().split('/').map(s=>s.trim());
+  const ok = accepted.some(a => val===a || val===a.replace(/\s+/g,''));
+  input.classList.add(ok?'correct':'wrong');
+  input.disabled = true;
+  const btn = document.querySelector('#view-quiz .btn-primary');
+  if(btn) btn.disabled = true;
+  processAnswer(q, ok);
 }
 
 function answerCategory(ans){
