@@ -1876,7 +1876,7 @@ function renderUnits() {
         <div class="unit-icon-lg" style="background:${u.color}22">${u.emoji}</div>
         <div class="unit-card-info">
           <div class="unit-card-name">Unit ${u.id}: ${u.name}</div>
-          <div class="unit-card-sub">${u.sub}</div>
+          <div class="unit-card-sub">${u.sub} · <span style="color:var(--green)">Tap to practise</span></div>
         </div>
         <div class="unit-card-pct" style="color:${u.color}">${pct}%</div>
       </div>
@@ -2006,8 +2006,8 @@ const SESSION = 10;
 let session=[], idx=0, answered=false;
 
 function pickQuestion(exclude=[], unitId=null) {
-  let pool = Q.filter(q=>!exclude.includes(q.id) && (!unitId || q.unit===unitId));
-  if(!pool.length) pool = Q.filter(q=>!unitId || q.unit===unitId);
+  let pool = Q.filter(q=>!exclude.includes(q.id) && (!unitId || q.u===unitId));
+  if(!pool.length) pool = Q.filter(q=>!unitId || q.u===unitId);
   if(!pool.length) pool = Q;
   const total = pool.reduce((s,q)=>s+(S.weights[q.id]||1),0);
   let r = Math.random()*total;
