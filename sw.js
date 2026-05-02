@@ -1,4 +1,4 @@
-const CACHE_NAME = 'englishhub-v8';
+const CACHE_NAME = 'englishhub-v9';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {

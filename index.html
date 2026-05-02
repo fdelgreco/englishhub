@@ -398,6 +398,7 @@
     .gp-badge.phrasal { color: var(--purple); border-color: rgba(206,130,255,.4); background: rgba(206,130,255,.08); }
     .gp-badge.pattern { color: var(--yellow); border-color: rgba(255,200,0,.4);   background: rgba(255,200,0,.08); }
     .gp-badge.colloc  { color: var(--green);  border-color: rgba(88,204,2,.4);    background: rgba(88,204,2,.08); }
+    .gp-badge.key     { color: var(--orange); border-color: rgba(255,149,0,.4);   background: rgba(255,149,0,.08); }
 
     /* GP end screen (reuses quiz view) */
     .gp-end { padding: 32px 20px; text-align: center; }
@@ -2086,7 +2087,20 @@ const CAT_META = {
 
 function renderGrammar() {
   const el = document.getElementById('gpUnitList');
-  el.innerHTML = UNITS.map(u => {
+  const keyTotal = GP.filter(g => g.cat === 'key').length;
+  const keySection = keyTotal ? `
+    <div class="gp-card gp-card-tap" onclick="startKeyDrill()" style="margin-bottom:8px">
+      <div class="gp-unit-hdr">
+        <div class="gp-unit-emoji" style="background:rgba(255,149,0,.15)">🔑</div>
+        <div class="gp-unit-info">
+          <div class="gp-unit-name">Keyword Sentences</div>
+          <div class="gp-unit-sub">One word fits all three sentences</div>
+        </div>
+        <div class="gp-total-count">${keyTotal}</div>
+      </div>
+      <div class="gp-badges"><span class="gp-badge key">🔑 Keyword · ${keyTotal}</span></div>
+    </div>` : '';
+  el.innerHTML = keySection + UNITS.map(u => {
     const total = GP.filter(g => g.u === u.id).length;
     if (!total) return '';
     const badges = Object.entries(CAT_META).map(([cat, meta]) => {
@@ -2116,6 +2130,15 @@ function startGPDrill(unitId) {
   // Shuffle and take up to 10
   const shuffled = pool.slice().sort(() => Math.random() - 0.5);
   session = shuffled.slice(0, Math.min(10, shuffled.length));
+  idx = 0; answered = false; gpMode = true; gpScore = 0;
+  enterQuizView();
+  renderQ();
+}
+
+function startKeyDrill() {
+  const pool = GP.filter(g => g.cat === 'key').slice().sort(() => Math.random() - 0.5);
+  if (!pool.length) return;
+  session = pool.slice(0, Math.min(10, pool.length));
   idx = 0; answered = false; gpMode = true; gpScore = 0;
   enterQuizView();
   renderQ();
