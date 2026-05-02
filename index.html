@@ -2024,7 +2024,10 @@ function buildSession(unitId=null) {
 }
 
 function startQuiz() { buildSession(); idx=0; answered=false; enterQuizView(); renderQ(); }
-function startUnitQuiz(uid) { buildSession(uid); idx=0; answered=false; enterQuizView(); renderQ(); }
+function startUnitQuiz(uid) {
+  if (!Q.some(q => q.u === uid)) { startGPDrill(uid); return; }
+  buildSession(uid); idx=0; answered=false; enterQuizView(); renderQ();
+}
 
 function enterQuizView() {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
