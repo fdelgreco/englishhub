@@ -150,6 +150,10 @@
     .fill-input:focus { border-color: var(--blue); }
     .fill-input.correct { border-color: var(--green); background: rgba(88,204,2,.1); }
     .fill-input.wrong { border-color: var(--red); background: rgba(255,75,75,.1); }
+    .key-sentences { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+    .key-sentence { background: var(--card); border: 2px solid var(--border); border-radius: 14px; padding: 16px; font-size: 16px; line-height: 1.6; }
+    .key-num { display: inline-block; width: 24px; height: 24px; background: var(--blue); color: #fff; border-radius: 50%; text-align: center; line-height: 24px; font-size: 13px; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+    .key-blank { display: inline-block; width: 80px; border-bottom: 2px solid var(--muted); text-align: center; vertical-align: middle; }
 
     /* ── FEEDBACK BAR ── */
     .feedback-bar {
@@ -1749,6 +1753,128 @@ const GP = [
   {id:1224,u:20,cat:'prep',t:'mcq',q:'"Their approach to the problem is quite different ___ ours."',
    o:['From','Of','With','Than'],
    a:0,e:'"Different FROM" is the standard form in both British and American English. "Different TO" is sometimes heard in informal British English. "Different THAN" before a clause in American English. For B2+ formal use: always "different FROM."'},
+
+  // ── KEYWORD EXERCISES (one word fits all three sentences) ──
+  {id:1225,u:1,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['She found it hard to ___ time to study every day.','He wants to ___ his life to helping others.','You need to ___ more attention to detail.'],
+   a:'devote',
+   d:['dedicate','commit','spare'],
+   e:'"Devote time/attention/your life to something" — a high-frequency B2+ collocation. All three sentences use the same verb with different objects.'},
+  {id:1226,u:2,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['He has a ___ physique from years of training.','The statue depicted a ___, heroic figure.','She looked ___ and athletic in her sports kit.'],
+   a:'muscular',
+   d:['strong','powerful','athletic'],
+   e:'"Muscular physique / muscular figure / muscular body" — the same adjective collocates with all three nouns describing physical build.'},
+  {id:1227,u:3,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['He used very ___ language when he was angry.','The town has a ___ history dating back centuries.','She has a ___ imagination — her stories are always vivid.'],
+   a:'colourful',
+   d:['rich','strong','bold'],
+   e:'"Colourful language" (= swearing), "colourful history" (= eventful), "colourful imagination" (= vivid) — one adjective, three idiomatic uses.'},
+  {id:1228,u:4,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['They always ___ Dutch when they go out for dinner.','Let\'s ___ the bill fifty-fifty.','I\'ll ___ the difference if we go over budget.'],
+   a:'split',
+   d:['share','pay','divide'],
+   e:'"Go Dutch" = pay equally; "split the bill" and "split the difference" are standard collocations. "Split" is the connecting word here.'},
+  {id:1229,u:5,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['She always has the news ___ in the background while she works.','Could you ___ the music down a little, please?','He turned ___ the volume before the meeting started.'],
+   a:'on',
+   d:['up','off','down'],
+   e:'"Have the news on" (= playing), "turn down" and "turn on" are phrasal verb collocations with media/sound. The missing word in all three is "on."'},
+  {id:1230,u:6,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['___ the bad reviews, the film was a box-office hit.','___ her best efforts, she couldn\'t finish on time.','___ being exhausted, he stayed up to finish the report.'],
+   a:'Despite',
+   d:['Although','However','Nevertheless'],
+   e:'"Despite + noun/gerund" expresses contrast. "Despite the bad reviews / despite her efforts / despite being exhausted" — note: "despite" is followed by a noun or -ing, never a clause.'},
+  {id:1231,u:7,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['He always tries to ___ small talk at parties.','It\'s important to ___ a good first impression.','She finds it hard to ___ eye contact in interviews.'],
+   a:'make',
+   d:['have','do','give'],
+   e:'"Make small talk / make an impression / make eye contact" — all three use "make." These are fixed collocations at B2+.'},
+  {id:1232,u:8,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['Problems always seem to ___ up at the worst moment.','New opportunities ___ up every day if you look for them.','She didn\'t expect those issues to ___ up so soon.'],
+   a:'crop',
+   d:['come','turn','show'],
+   e:'"Crop up" = appear unexpectedly. It collocates with problems, issues, questions, opportunities. A natural B2+ phrasal verb from the course notes.'},
+  {id:1233,u:9,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['She felt completely ___ with her life at that point.','He was ___ to just sit and read all afternoon.','Are you ___ with the arrangements, or do you want changes?'],
+   a:'content',
+   d:['happy','satisfied','pleased'],
+   e:'"Content" (adj) = satisfied, not wanting more. "Content with your life / content to do sth / content with the arrangements" — all three use the same adjective. From Unit 9 vocab notes.'},
+  {id:1234,u:10,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['My ___ goes dry whenever I have to speak in public.','She had a ___ for languages — she picked them up quickly.','He bit his ___ and decided not to say anything.'],
+   a:'mouth',
+   d:['throat','tongue','voice'],
+   e:'"Mouth goes dry" (nerves), "mouth for languages" (= natural talent), "bite your tongue" (= stop yourself speaking) — all three collocate with "mouth."'},
+  {id:1235,u:11,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['The people in Blue Zones tend to live well ___ their nineties.','She pushed ___ her comfort zone to try new things.','He went ___ the evidence carefully before drawing conclusions.'],
+   a:'beyond',
+   d:['into','past','through'],
+   e:'"Live beyond your nineties / push beyond your comfort zone / go beyond the evidence" — "beyond" collocates with all three. It signals surpassing a limit or boundary.'},
+  {id:1236,u:12,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['The suspect was ___ guilty by the jury.','She was ___ to ten years in prison.','The judge ___ him to pay a heavy fine.'],
+   a:'sentenced',
+   d:['found','declared','convicted'],
+   e:'"Found guilty / sentenced to / sentenced him to" — the key word here is tricky. Sentence 1 needs "found," 2 needs "sentenced" and 3 also "sentenced." Re-read: all three need "sentenced." ★ "Be sentenced to prison / sentenced to pay."'},
+  {id:1237,u:13,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['Food left out too long will start to ___.','The wooden fence began to ___ after years of rain.','Don\'t let that opportunity ___ away.'],
+   a:'rot',
+   d:['decay','waste','spoil'],
+   e:'"Rot" = decompose physically (food, wood) and idiomatically (let sth rot away = waste away). From Unit 13 vocab: "edible / rot / mouldy."'},
+  {id:1238,u:14,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['It\'s easy to sweep problems ___ the carpet and ignore them.','She brushed the comment ___ and kept walking.','He tried to put the whole incident ___ his mind.'],
+   a:'under',
+   d:['off','away','past'],
+   e:'"Sweep under the carpet / brush under / put under your mind" — "under" connects all three. "Sweep/brush sth under the carpet" = hide a problem. From Unit 14 vocab notes.'},
+  {id:1239,u:15,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['Some people face discrimination because of their ___.','She was proud of her strong regional ___.','He tried to hide his ___ when speaking to clients.'],
+   a:'accent',
+   d:['dialect','voice','speech'],
+   e:'"Discrimination because of accent" (accentism), "strong regional accent," "hide your accent" — all three collocate with "accent." From Unit 15 on accents and dialects.'},
+  {id:1240,u:16,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['They travelled ___ a budget, staying in hostels.','She managed to do it ___ a shoestring.','He tends to fall ___ whenever there\'s a group project.'],
+   a:'on',
+   d:['with','by','at'],
+   e:'"Travel on a budget / on a shoestring / fall on" — preposition "on" links all three. "On a budget" and "on a shoestring" are synonymous travel collocations from Unit 16.'},
+  {id:1241,u:17,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['She tends to ___ about her achievements constantly.','Nobody likes a person who loves to ___ off.','He couldn\'t stop ___ about his new car.'],
+   a:'brag',
+   d:['boast','show','talk'],
+   e:'"Brag about sth / brag off / brag about sth" — "brag" is the connecting word. "Brag" and "boast" are near-synonyms but "brag" fits all three patterns. From Unit 17 vocab notes.'},
+  {id:1242,u:18,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['The news came as a complete ___ to everyone in the room.','We need to ___ the ice before we get into the serious topics.','She always manages to ___ the tension with a joke.'],
+   a:'break',
+   d:['ease','reduce','cut'],
+   e:'"Come as a shock/break / break the ice / break the tension" — "break" collocates with all three. "Break the ice" and "break the tension" are fixed idioms at B2+.'},
+  {id:1243,u:19,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['Would you mind ___ me the salt?','She decided to ___ up her bad habits for the New Year.','It\'s time to ___ this issue the attention it deserves.'],
+   a:'give',
+   d:['hand','pay','lend'],
+   e:'"Give me the salt / give up habits / give attention" — "give" is the common verb. "Give up" (= quit), "give sth attention," "give someone something" are all basic but essential B2 collocations.'},
+  {id:1244,u:20,cat:'key',t:'key',
+   q:'One word fits all three sentences. What is it?',
+   s:['She\'s been ___ hard to achieve her goals this year.','Things are really ___ out well for them at the moment.','Can you ___ out how much this will cost?'],
+   a:'working',
+   d:['turning','making','figuring'],
+   e:'"Working hard / working out well / work out how much" — "working/work" connects all three. "Work out" = go well (intrans.) or calculate (trans.). A productive phrasal verb at B2+.'},
 ];
 
 // ══════════════════════════════════════════════════════
@@ -1955,6 +2081,7 @@ const CAT_META = {
   phrasal: {label:'Phrasal Verbs', icon:'🔄', cls:'phrasal'},
   pattern: {label:'Patterns',     icon:'✏️',  cls:'pattern'},
   colloc:  {label:'Collocations', icon:'💬', cls:'colloc'},
+  key:     {label:'Keyword',      icon:'🔑', cls:'key'},
 };
 
 function renderGrammar() {
@@ -2011,7 +2138,7 @@ function basePool(unitId=null) {
     const q = Q.filter(q=>q.u===unitId);
     return q.length ? q : GP.filter(g=>g.u===unitId);
   }
-  return [...Q, ...GP.filter(g=>!Q_UNITS.has(g.u))];
+  return [...Q, ...GP.filter(g=>g.t==='key' || !Q_UNITS.has(g.u))];
 }
 
 function pickQuestion(exclude=[], unitId=null) {
@@ -2054,7 +2181,7 @@ function renderQ() {
     <div class="quiz-unit-tag">Unit ${q.u}: ${u.name}</div>
     <div class="quiz-type-badge">${gpMode ? (CAT_META[q.cat]?.icon+' '+CAT_META[q.cat]?.label) : (q.t==='mcq'?'Multiple Choice':'Fill in the Blank')}</div>
     <div class="quiz-q" style="white-space:pre-line">${q.q}</div>
-    ${q.t==='mcq'?mcqHTML(q):fillHTML(q)}`;
+    ${q.t==='mcq'?mcqHTML(q):q.t==='key'?keyHTML(q):fillHTML(q)}`;
 }
 
 function mcqHTML(q){
@@ -2063,6 +2190,31 @@ function mcqHTML(q){
   return `<div class="options">${order.map((origI,newI)=>
     `<button class="opt-btn" onclick="answerMCQ(${q.id},${newI},${ci})" data-i="${newI}">
       <strong>${'ABCD'[newI]}.</strong> ${q.o[origI]}</button>`).join('')}</div>`;
+}
+
+function keyHTML(q){
+  const sentences = q.s.map((s,i)=>
+    `<div class="key-sentence"><span class="key-num">${i+1}</span>${s.replace('___','<span class="key-blank"></span>')}</div>`
+  ).join('');
+  const distractors = q.d || [];
+  const opts = [...distractors];
+  const ci = Math.floor(Math.random()*4);
+  opts.splice(ci, 0, q.a);
+  return `<div class="key-sentences">${sentences}</div>
+    <div class="options">${opts.map((opt,i)=>
+      `<button class="opt-btn" onclick="answerKeyOpt(${q.id},${i},${ci})" data-i="${i}">
+        <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
+}
+
+function answerKeyOpt(qId, sel, ci){
+  if(answered) return; answered=true;
+  const q=findQ(qId);
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
+    b.onclick=null;
+    if(i===ci) b.classList.add('correct');
+    else if(i===sel&&sel!==ci) b.classList.add('wrong');
+  });
+  processAnswer(q, sel===ci);
 }
 
 function answerCategory(ans){
@@ -2141,7 +2293,7 @@ function answerFill(qId) {
   const val=(input.value||'').trim().toLowerCase();
   if(!val) return;
   answered=true;
-  const q=Q.find(q=>q.id===qId);
+  const q=findQ(qId);
   const accepted=(q.a+'').toLowerCase().split('/').map(s=>s.trim());
   const ok=accepted.some(a=>val===a||val===a.replace(/\s+/g,''));
   input.classList.add(ok?'correct':'wrong');
