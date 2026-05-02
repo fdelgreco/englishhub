@@ -2005,10 +2005,18 @@ function exitGPDrill() {
 const SESSION = 10;
 let session=[], idx=0, answered=false;
 
+const Q_UNITS = new Set(Q.map(q=>q.u));
+function basePool(unitId=null) {
+  if (unitId) {
+    const q = Q.filter(q=>q.u===unitId);
+    return q.length ? q : GP.filter(g=>g.u===unitId);
+  }
+  return [...Q, ...GP.filter(g=>!Q_UNITS.has(g.u))];
+}
+
 function pickQuestion(exclude=[], unitId=null) {
-  let pool = Q.filter(q=>!exclude.includes(q.id) && (!unitId || q.u===unitId));
-  if(!pool.length) pool = Q.filter(q=>!unitId || q.u===unitId);
-  if(!pool.length) pool = Q;
+  let pool = basePool(unitId).filter(q=>!exclude.includes(q.id));
+  if (!pool.length) pool = basePool(unitId);
   const total = pool.reduce((s,q)=>s+(S.weights[q.id]||1),0);
   let r = Math.random()*total;
   for(const q of pool){ r-=(S.weights[q.id]||1); if(r<=0) return q; }
@@ -2024,10 +2032,7 @@ function buildSession(unitId=null) {
 }
 
 function startQuiz() { buildSession(); idx=0; answered=false; enterQuizView(); renderQ(); }
-function startUnitQuiz(uid) {
-  if (!Q.some(q => q.u === uid)) { startGPDrill(uid); return; }
-  buildSession(uid); idx=0; answered=false; enterQuizView(); renderQ();
-}
+function startUnitQuiz(uid) { buildSession(uid); idx=0; answered=false; enterQuizView(); renderQ(); }
 
 function enterQuizView() {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -2102,7 +2107,7 @@ function fillHTML(q){
       <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
 }
 
-function findQ(qId){ return gpMode ? GP.find(g=>g.id===qId) : Q.find(q=>q.id===qId); }
+function findQ(qId){ return gpMode ? GP.find(g=>g.id===qId) : (Q.find(q=>q.id===qId) || GP.find(g=>g.id===qId)); }
 
 function answerFillOpt(qId, sel, ci){
   if(answered) return; answered=true;
