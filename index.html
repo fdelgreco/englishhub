@@ -2058,9 +2058,11 @@ function renderQ() {
 }
 
 function mcqHTML(q){
-  return `<div class="options">${q.o.map((opt,i)=>
-    `<button class="opt-btn" onclick="answerMCQ(${q.id},${i})" data-i="${i}">
-      <strong>${'ABCD'[i]}.</strong> ${opt}</button>`).join('')}</div>`;
+  const order = [0,1,2,3].sort(()=>Math.random()-.5);
+  const ci = order.indexOf(q.a);
+  return `<div class="options">${order.map((origI,newI)=>
+    `<button class="opt-btn" onclick="answerMCQ(${q.id},${newI},${ci})" data-i="${newI}">
+      <strong>${'ABCD'[newI]}.</strong> ${q.o[origI]}</button>`).join('')}</div>`;
 }
 
 function answerCategory(ans){
@@ -2121,13 +2123,13 @@ function answerFillOpt(qId, sel, ci){
 }
 
 
-function answerMCQ(qId, sel) {
+function answerMCQ(qId, sel, ci) {
   if(answered) return; answered=true;
   const q=findQ(qId);
-  const ok = sel===q.a;
+  const ok = sel===ci;
   document.querySelectorAll('.opt-btn').forEach((b,i)=>{
     b.onclick=null;
-    if(i===q.a) b.classList.add('correct');
+    if(i===ci) b.classList.add('correct');
     else if(i===sel&&!ok) b.classList.add('wrong');
   });
   processAnswer(q, ok);
